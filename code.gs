@@ -1,29 +1,21 @@
- /* This is the User Script that goes alone with the Productivity Psychosis Habitica challenge.
-    Copyright (C) 2022  @Stryder2076 on habitica.
-    
-    This is a derivative work of @Lord_Vlad's userscript: https://habitica.com/challenges/074dec30-252f-42aa-9dc8-a6462b982a59
+/* Copyright 2022 @Lord_Vlad
 
-    This User Script is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+       http://www.apache.org/licenses/LICENSE-2.0
 
-    Here is a copy of the GNU General Public License
-    https://www.gnu.org/licenses*/
+  This script was originally comissioned by the copyright owner. I (@Stryder2076) started using it myself and modified and distributed it with his permission.*/
 
-// Change these to your user ID and API token, they can be found here: 'https://habitica.com/user/settings/api'
+// Change the below two consts to your user ID and API token, they can be found here: 'https://habitica.com/user/settings/api'
 // Leave the quotes and replace the two # symbols and the variable name inbetween them with your ID and token
-const habId = "habId";
-const habToken = "habToken"; // Never share your API token with anyone even on Github
+const habId = "#habId#";
+const habToken = "#habToken#"; // Never share your API token with anyone even on Github
 const habitToCheck =
-  "![PSN](https://i.imgur.com/Dt7diBq.png) **Poisonous habit**"; // Change this ot the name that you want for the negative habit to click on checklist item failures
+  "![Crazy person with knife](https://i.imgur.com/Gl0O99r.png) Psychotic break"; // Change this ot the name that you want for the negative habit to click on checklist item failures
 const taskName =
-  "![PSN](https://i.imgur.com/Dt7diBq.png) **Productivity psychotic gas**"; // Change this to the name of the daily that you want the checklist items to be on
+  "![insane person with cracked head on top](https://i.imgur.com/ktgyMSM.png) insanity remedy"; // Change this to the name of the daily that you want the checklist items to be on
 const AllCursesCheckedChecklistName = "All curses checked"; // Change this to your prefered name for the checklist item that will be auto created first if you don't have it and auto check if you've completed all base curses, I plan on adding modular code for the other challenges in the future
 const haveNoSoonToDosChecklistName = "No soon To-Dos"; // Change this to your prefered name for the checklist item that will be auto created second and auto check if you have no to-dos in the next 14 days
 const haveNoOverdueToDosChecklistName = "No overdue To-Dos"; // Change this to your prefered name for the checklist item that will be auto created third and auto check if you have no over due todos
