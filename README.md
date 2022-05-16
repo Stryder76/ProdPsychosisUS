@@ -1,5 +1,7 @@
 # ProdPsychosisUS
 
+This branch is where I will push new features and fix bugs before pushing to main. I would strongly advise against using the code.gs file here, it could easily be problematic for users, I would only advise you use this branch if you want to look for bugs.
+
 This repository is my hosting location and publication of the user script I made from [@Lord_Vlad](https://habitica.com/profile/ce36e72e-50fd-4e98-908b-34b3c06e9664)'s orginal [challenge](https://habitica.com/challenges/074dec30-252f-42aa-9dc8-a6462b982a59) and [Userscript.](https://pastebin.com/Ajbc6u8D) I do not own the copyright and have his permission to have this repo.
 
 The Userscript includes 3 checklist items that are automatically created if they don't already exist, they are automatically checked off if the conditions are true, if they are not true, the negative habit gets ticked a number of times based on the checklist item, I won't repeat that as it's already in the [challenge](https://habitica.com/challenges/4867732f-4019-4880-823e-5f3a178acea8) description
