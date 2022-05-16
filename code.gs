@@ -10,7 +10,8 @@
 
 // Change the below two consts to your user ID and API token, they can be found here: 'https://habitica.com/user/settings/api'
 // Leave the quotes and replace the two # symbols and the variable name inbetween them with your ID and token
-const habId = "#habId#";
+
+const habId = "habId";
 const habToken = "#habToken#"; // Never share your API token with anyone even on Github
 const habitToCheck =
   "![Crazy person with knife](https://i.imgur.com/Gl0O99r.png) Psychotic break"; // Change this ot the name that you want for the negative habit to click on checklist item failures
@@ -116,7 +117,7 @@ function scheduleCron() {
           text: AllCursesCheckedChecklistName,
         };
         const newCursesCompletedItemResponse = UrlFetchApp.fetch(
-          "https://habitica.com/api/v3/tasks/d819fba4-5ae4-4c12-b949-26bb09b90b43/checklist/",
+          `https://habitica.com/api/v3/tasks/${task.id}/checklist/`,
           newItem
         );
         const newCursesCompletedItem = JSON.parse(
@@ -149,7 +150,7 @@ function scheduleCron() {
           text: haveNoSoonToDosChecklistName,
         };
         const NoSoonToDosItemResponse = UrlFetchApp.fetch(
-          "https://habitica.com/api/v3/tasks/d819fba4-5ae4-4c12-b949-26bb09b90b43/checklist/",
+          `https://habitica.com/api/v3/tasks/${task.id}/checklist/`,
           newItem
         );
         const NoSoonToDosItem = JSON.parse(
@@ -182,7 +183,7 @@ function scheduleCron() {
           text: haveNoOverdueToDosChecklistName,
         };
         const NoOverdueToDosItemResponse = UrlFetchApp.fetch(
-          "https://habitica.com/api/v3/tasks/d819fba4-5ae4-4c12-b949-26bb09b90b43/checklist/",
+          `https://habitica.com/api/v3/tasks/${task.id}/checklist/`,
           newItem
         );
         const NoOverDueToDosItem = JSON.parse(
@@ -253,7 +254,7 @@ function scheduleCron() {
     if (poisonsDone == true) {
       Logger.log("All curses checked, scoring checklist item");
       UrlFetchApp.fetch(
-        `https://habitica.com/api/v3/tasks/d819fba4-5ae4-4c12-b949-26bb09b90b43/checklist/${allCursesCheckedID}/score`,
+        `https://habitica.com/api/v3/tasks/${task.id}/checklist/${allCursesCheckedID}/score`,
         postParams
       );
       allCursesChecked.completed = true
@@ -293,7 +294,7 @@ function scheduleCron() {
     if (soonToDosExist === false) {
       Logger.log("scoring checklist item");
       UrlFetchApp.fetch(
-        `https://habitica.com/api/v3/tasks/d819fba4-5ae4-4c12-b949-26bb09b90b43/checklist/${haveNoSoonToDosID}/score`,
+        `https://habitica.com/api/v3/tasks/${task.id}/checklist/${haveNoSoonToDosID}/score`,
         postParams
       );
       haveNoSoonToDos.completed = true
@@ -340,7 +341,7 @@ function scheduleCron() {
     if (overdue === false) {
       Logger.log("scoring checklist item");
       UrlFetchApp.fetch(
-        `https://habitica.com/api/v3/tasks/d819fba4-5ae4-4c12-b949-26bb09b90b43/checklist/${haveNoOverdueToDosID}/score`,
+        `https://habitica.com/api/v3/tasks/${task.id}/checklist/${haveNoOverdueToDosID}/score`,
         postParams
       );
       haveNoOverdueTodos.completed = true
