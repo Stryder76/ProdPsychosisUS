@@ -11,7 +11,7 @@
 // Change the below two consts to your user ID and API token, they can be found here: 'https://habitica.com/user/settings/api'
 // Leave the quotes and replace the two # symbols and the variable name inbetween them with your ID and token
 
-const habId = "#hadId#";
+const habId = "#habId#";
 const habToken = "#habToken#"; // Never share your API token with anyone even on Github
 const habitToCheck =
   "![Crazy person with knife](https://i.imgur.com/Gl0O99r.png) Psychotic break"; // Change this ot the name that you want for the negative habit to click on checklist item failures
