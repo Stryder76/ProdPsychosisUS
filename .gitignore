@@ -4,3 +4,4 @@ package-lock.json
 .clasp.json
 appsscript.json
 package.json
+.claspignore
