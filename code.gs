@@ -84,56 +84,21 @@ function scheduleCron() {
           "Have no soon to-dos"
         );
 
-        /* if (
-          check.text.trim().toLowerCase() ===
-          haveNoSoonToDosChecklistName.trim().toLowerCase()
-        ) {
-          haveNoSoonToDosExists = true;
-          haveNoSoonToDos = check;
-          haveNoSoonToDosID = haveNoSoonToDos.id;
-          Logger.log(
-            "No soon ToDo's title is:" +
-              " " +
-              "'" +
-              haveNoSoonToDos.text +
-              "'" +
-              ", its id is: " +
-              haveNoSoonToDosID
-          );
-        }*/
-        if (
-          check.text.trim().toLowerCase() ===
-          haveNoOverdueToDosChecklistName.trim().toLowerCase()
-        ) {
-          haveNoOverdueToDosExists = true;
-          haveNoOverdueTodos = check;
-          haveNoOverdueToDosID = haveNoOverdueTodos.id;
-          Logger.log(
-            "No Over Due To-Do item's title is: " +
-              "'" +
-              haveNoOverdueTodos.text +
-              "'" +
-              ", its id is: " +
-              haveNoOverdueToDosID
-          );
-        }
-        if (
-          check.text.trim().toLowerCase() ===
-          haveLessThanTwentyTodosName.trim().toLowerCase()
-        ) {
-          haveLessThanTwentyTodosExists = true;
-          haveLessThanTwentyTodos = check;
-          haveLessThanTwentyTodosID = haveLessThanTwentyTodos.id;
-          Logger.log(
-            "Low to-do count item name is" +
-              " " +
-              "'" +
-              haveLessThanTwentyTodos.text +
-              "'" +
-              ", its ID is: " +
-              haveLessThanTwentyTodosID
-          );
-        }
+        ifItemsExist(
+          haveNoOverdueToDosChecklistName,
+          haveNoOverdueToDosExists,
+          haveNoOverdueTodos,
+          haveNoOverdueToDosID,
+          "Have no over Due To-Dos"
+        );
+
+        ifItemsExist(
+          haveLessThanTwentyTodosName,
+          haveLessThanTwentyTodosExists,
+          haveLessThanTwentyTodos,
+          haveLessThanTwentyTodosID,
+          "Have a low to-do count"
+        );
       }
       // These below if statements check to see if the checklist items don't exist and if so create them
       if (!allCursesCheckedExists) {
