@@ -69,14 +69,14 @@ function scheduleCron() {
 
       // This for loop looks through the checklist of the correct task and checks to see if the checklist items exist, if they do it communicates that to another code section through a variable and moves on, otherwise nothing happens
       for (check of task.checklist) {
-        ifItemsExist(
+        ifItemExists(
           AllCursesCheckedChecklistName,
           allCursesCheckedExists,
           allCursesChecked,
           allCursesCheckedID,
           "All curses checked"
         );
-        ifItemsExist(
+        ifItemExists(
           haveNoSoonToDosChecklistName,
           haveNoSoonToDosExists,
           haveNoSoonToDos,
@@ -84,7 +84,7 @@ function scheduleCron() {
           "Have no soon to-dos"
         );
 
-        ifItemsExist(
+        ifItemExists(
           haveNoOverdueToDosChecklistName,
           haveNoOverdueToDosExists,
           haveNoOverdueTodos,
@@ -92,7 +92,7 @@ function scheduleCron() {
           "Have no over Due To-Dos"
         );
 
-        ifItemsExist(
+        ifItemExists(
           haveLessThanTwentyTodosName,
           haveLessThanTwentyTodosExists,
           haveLessThanTwentyTodos,
@@ -483,7 +483,7 @@ function scheduleCron() {
     }
   }
 
-  function ifItemsExist(
+  function ifItemExists(
     itemName,
     itemExistBoolean,
     itemData,
@@ -504,6 +504,40 @@ function scheduleCron() {
           ", its ID is: " +
           itemID
       );
+    }
+  }
+
+  function ifItemDoesntExist(itemName, itemResponse, item, itemExistsBoolean, itemID, itemNameInLogStatement) {
+    const newItem = JSON.parse(JSON.stringify(postParams));
+    newItem.payload = {
+      text: itemName,
+    };
+    const itemResponse = UrlFetchApp.fetch(
+      `https://habitica.com/api/v3/tasks/${taskId}/checklist/`,
+      newItem
+    );
+    const item = JSON.parse(
+      itemResponse.getContentText()
+    );
+    // below code is looking for the checklist item that was just made to properly define the variable
+    for (checklistItem of item.data.checklist) {
+      if (
+        checklistItem.text.trim().toLowerCase() ===
+        itemName.trim().toLowerCase()
+      ) {
+        itemExistsBoolean = true;
+        item = checklistItem;
+        itemID = item.id;
+        Logger.log(
+          itemNameInLogStatement + " item did not exist, it has been made; it's title is" +
+            " " +
+            "'" +
+            item.text +
+            "'" +
+            ", its ID is: " +
+            itemID
+        );
+      }
     }
   }
 
