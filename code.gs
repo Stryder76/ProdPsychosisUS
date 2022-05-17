@@ -69,10 +69,22 @@ function scheduleCron() {
 
       // This for loop looks through the checklist of the correct task and checks to see if the checklist items exist, if they do it communicates that to another code section through a variable and moves on, otherwise nothing happens
       for (check of task.checklist) {
+        ifItemsExist(
+          AllCursesCheckedChecklistName,
+          allCursesCheckedExists,
+          allCursesChecked,
+          allCursesCheckedID,
+          "All curses checked"
+        );
+        ifItemsExist(
+          haveNoSoonToDosChecklistName,
+          haveNoSoonToDosExists,
+          haveNoSoonToDos,
+          haveNoSoonToDosID,
+          "Have no soon to-dos"
+        );
 
-        ifItemsExist(AllCursesCheckedChecklistName, allCursesCheckedExists, allCursesChecked, allCursesCheckedID, "All curses checked")
-
-        if (
+        /* if (
           check.text.trim().toLowerCase() ===
           haveNoSoonToDosChecklistName.trim().toLowerCase()
         ) {
@@ -88,7 +100,7 @@ function scheduleCron() {
               ", its id is: " +
               haveNoSoonToDosID
           );
-        }
+        }*/
         if (
           check.text.trim().toLowerCase() ===
           haveNoOverdueToDosChecklistName.trim().toLowerCase()
