@@ -101,7 +101,17 @@ function scheduleCron() {
         );
       }
       // These below if statements check to see if the checklist items don't exist and if so create them
-      if (!allCursesCheckedExists) {
+
+      ifItemDoesntExist(
+        AllCursesCheckedChecklistName,
+        newCursesCompletedItemResponse,
+        allCursesChecked,
+        allCursesCheckedExists,
+        allCursesCheckedID,
+        "All curses checked"
+      );
+
+      /* if (!allCursesCheckedExists) {
         const newItem = JSON.parse(JSON.stringify(postParams));
         newItem.payload = {
           text: AllCursesCheckedChecklistName,
@@ -133,7 +143,7 @@ function scheduleCron() {
             );
           }
         }
-      }
+      }*/
       if (!haveNoSoonToDosExists) {
         const newItem = JSON.parse(JSON.stringify(postParams));
         newItem.payload = {
@@ -507,7 +517,14 @@ function scheduleCron() {
     }
   }
 
-  function ifItemDoesntExist(itemName, itemResponse, item, itemExistsBoolean, itemID, itemNameInLogStatement) {
+  function ifItemDoesntExist(
+    itemName,
+    itemResponse,
+    item,
+    itemExistsBoolean,
+    itemID,
+    itemNameInLogStatement
+  ) {
     const newItem = JSON.parse(JSON.stringify(postParams));
     newItem.payload = {
       text: itemName,
@@ -516,9 +533,7 @@ function scheduleCron() {
       `https://habitica.com/api/v3/tasks/${taskId}/checklist/`,
       newItem
     );
-    const item = JSON.parse(
-      itemResponse.getContentText()
-    );
+    const item = JSON.parse(itemResponse.getContentText());
     // below code is looking for the checklist item that was just made to properly define the variable
     for (checklistItem of item.data.checklist) {
       if (
@@ -529,7 +544,8 @@ function scheduleCron() {
         item = checklistItem;
         itemID = item.id;
         Logger.log(
-          itemNameInLogStatement + " item did not exist, it has been made; it's title is" +
+          itemNameInLogStatement +
+            " item did not exist, it has been made; it's title is" +
             " " +
             "'" +
             item.text +
