@@ -100,7 +100,7 @@ function scheduleCron() {
       // These below if statements check to see if the checklist items don't exist and if so create them
 */
 
-     /* if (!haveNoSoonToDosExists) {
+      /* if (!haveNoSoonToDosExists) {
         const newItem = JSON.parse(JSON.stringify(postParams));
         newItem.payload = {
           text: haveNoSoonToDosChecklistName,
@@ -247,7 +247,7 @@ function scheduleCron() {
         if (poisonsDone == true) {
           Logger.log("All curses checked, scoring checklist item");
           UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${allCursesCheckedID}/score`,
+            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${functionOutput.id}/score`,
             postParams
           );
           functionOutput.completed = true;
@@ -255,44 +255,63 @@ function scheduleCron() {
       }
 
       // Below code until next comment is the auto check for no soon to-dos
-      /*if (haveNoSoonToDosExists === true) {
-    let today = new Date();
-    let days;
-    let task;
-    let soonToDoDate;
-    let d = UrlFetchApp.fetch(
-      "https://habitica.com/api/v3/tasks/user?type=todos",
-      getParams
-    );
-    let parsedD = JSON.parse(d.getContentText());
-    function toDoin14Days(value) {
-      task = value;
-      soonToDoDate = new Date(task.date).valueOf();
-      let todayUTC = today;
-      let td = new Date(todayUTC).valueOf();
-      let sec = 1000;
-      let min = 60 * sec;
-      let hour = 60 * min;
-      let day = 24 * hour;
-      let diff = soonToDoDate - td;
-      days = Math.floor(diff / day);
-      //days = 17; //this is debug code
-      Logger.log("due date difference from today is" + " " + "%s days", days);
-      return days < 13;
-    }
-    let soonToDosExist = parsedD.data.some(toDoin14Days);
-    Logger.log("task checklist item is " + haveNoSoonToDos.text);
-    if (soonToDosExist === false) {
-      Logger.log("scoring checklist item");
-      UrlFetchApp.fetch(
-        `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoSoonToDosID}/score`,
-        postParams
-      );
-      haveNoSoonToDos.completed = true;
-    }
-  } else {
-    Logger.log("something went wrong");
-  }*/
+      if (
+        findItemAndCreateIfDidntExist(
+          task.checklist,
+          haveNoSoonToDosChecklistName,
+          "Have no soon to-dos"
+        )
+      ) {
+        let today = new Date();
+        let days;
+        let task;
+        let soonToDoDate;
+        let d = UrlFetchApp.fetch(
+          "https://habitica.com/api/v3/tasks/user?type=todos",
+          getParams
+        );
+        let parsedD = JSON.parse(d.getContentText());
+        function toDoin14Days(value) {
+          task = value;
+          soonToDoDate = new Date(task.date).valueOf();
+          let todayUTC = today;
+          let td = new Date(todayUTC).valueOf();
+          let sec = 1000;
+          let min = 60 * sec;
+          let hour = 60 * min;
+          let day = 24 * hour;
+          let diff = soonToDoDate - td;
+          days = Math.floor(diff / day);
+          //days = 17; //this is debug code
+          Logger.log(
+            "due date difference from today is" + " " + "%s days",
+            days
+          );
+          return days < 13;
+        }
+        let soonToDosExist = parsedD.data.some(toDoin14Days);
+        Logger.log("task checklist item is " + haveNoSoonToDos.text);
+        if (soonToDosExist === false) {
+          Logger.log("scoring checklist item");
+          UrlFetchApp.fetch(
+            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${
+              findItemAndCreateIfDidntExist(
+                task.checklist,
+                haveNoSoonToDosChecklistName,
+                "Have no soon to-dos"
+              ).id
+            }/score`,
+            postParams
+          );
+          findItemAndCreateIfDidntExist(
+            task.checklist,
+            haveNoSoonToDosChecklistName,
+            "Have no soon to-dos"
+          ).completed = true;
+        }
+      } else {
+        Logger.log("something went wrong");
+      }
 
       // Below code until next comment is the auto checking for no overdue to-dos
       if (haveNoOverdueToDosExists === true) {
