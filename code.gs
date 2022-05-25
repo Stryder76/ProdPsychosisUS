@@ -65,19 +65,19 @@ function scheduleCron() {
       Logger.log("Found task " + task.id);
       var taskId = task.id;
 
-      // This for loop looks through the checklist of the correct task and checks to see if the checklist items exist, if they do it communicates that to another code section through a variable and moves on, otherwise nothing happens
-      //    for (check of task.checklist) {
-      findItemAndCreateIfDidntExist(
-        task.checklist,
-        AllCursesCheckedChecklistName,
-        "All curses checked"
-      );
-      findItemAndCreateIfDidntExist(
-        task.checklist,
-        haveNoSoonToDosChecklistName,
-        "Have no soon to-dos"
-      );
-      /*
+      // This for loop looks through the checklist of the correct task and checks to see if the checklist items exist, if they do it communicates that to another code section through a function output and moves on, otherwise nothing happens
+      for (check of task.checklist) {
+        findItemAndCreateIfDidntExist(
+          task.checklist,
+          AllCursesCheckedChecklistName,
+          "All curses checked"
+        );
+        findItemAndCreateIfDidntExist(
+          task.checklist,
+          haveNoSoonToDosChecklistName,
+          "Have no soon to-dos"
+        );
+        /*
 
       findItemAndCreateIfDidntExist(
         check,
