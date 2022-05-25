@@ -56,7 +56,6 @@ function scheduleCron() {
   let haveNoSoonToDosID;
   let haveNoOverdueToDosID;
   let haveLessThanTwentyTodosID;
-  let allCursesCheckedExists = false;
   let haveNoSoonToDosExists = false;
   let haveNoOverdueToDosExists = false;
   let haveLessThanTwentyTodosExists = false;
