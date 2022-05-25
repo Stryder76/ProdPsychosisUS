@@ -72,14 +72,12 @@ function scheduleCron() {
         AllCursesCheckedChecklistName,
         "All curses checked"
       );
-      /*   findItemAndCreateIfDidntExist(
-        check,
+      findItemAndCreateIfDidntExist(
+        task.checklist,
         haveNoSoonToDosChecklistName,
-        haveNoSoonToDosExists,
-        haveNoSoonToDos,
-        haveNoSoonToDosID,
         "Have no soon to-dos"
       );
+      /*
 
       findItemAndCreateIfDidntExist(
         check,
@@ -102,40 +100,7 @@ function scheduleCron() {
       // These below if statements check to see if the checklist items don't exist and if so create them
 */
 
-      /* if (!allCursesCheckedExists) {
-        const newItem = JSON.parse(JSON.stringify(postParams));
-        newItem.payload = {
-          text: AllCursesCheckedChecklistName,
-        };
-        const newCursesCompletedItemResponse = UrlFetchApp.fetch(
-          `https://habitica.com/api/v3/tasks/${taskId}/checklist/`,
-          newItem
-        );
-        const newCursesCompletedItem = JSON.parse(
-          newCursesCompletedItemResponse.getContentText()
-        );
-        // below code is looking for the checklist item that was just made to properly define the variable
-        for (checklistItem of newCursesCompletedItem.data.checklist) {
-          if (
-            checklistItem.text.trim().toLowerCase() ===
-            AllCursesCheckedChecklistName.trim().toLowerCase()
-          ) {
-            allCursesCheckedExists = true;
-            functionOutput = checklistItem;
-            allCursesCheckedID = functionOutput.id;
-            Logger.log(
-              "Curse completion item did not exist, it has been made; it's title is" +
-                " " +
-                "'" +
-                functionOutput.text +
-                "'" +
-                ", its ID is: " +
-                allCursesCheckedID
-            );
-          }
-        }
-      }*/
-      if (!haveNoSoonToDosExists) {
+     /* if (!haveNoSoonToDosExists) {
         const newItem = JSON.parse(JSON.stringify(postParams));
         newItem.payload = {
           text: haveNoSoonToDosChecklistName,
@@ -167,7 +132,7 @@ function scheduleCron() {
             );
           }
         }
-      }
+      }*/
       if (!haveNoOverdueToDosExists) {
         const newItem = JSON.parse(JSON.stringify(postParams));
         newItem.payload = {
