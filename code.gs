@@ -66,7 +66,7 @@ function scheduleCron() {
       var taskId = task.id;
 
       // This for loop looks through the checklist of the correct task and checks to see if the checklist items exist, if they do it communicates that to another code section through a function output and moves on, otherwise nothing happens
-      for (check of task.checklist) {
+      
         findItemAndCreateIfDidntExist(
           task.checklist,
           AllCursesCheckedChecklistName,
@@ -96,9 +96,9 @@ function scheduleCron() {
         haveLessThanTwentyTodosID,
         "Have a low to-do count"
       );
-        }
+      */
+      
       // These below if statements check to see if the checklist items don't exist and if so create them
-*/
 
       /* if (!haveNoSoonToDosExists) {
         const newItem = JSON.parse(JSON.stringify(postParams));
@@ -133,7 +133,7 @@ function scheduleCron() {
           }
         }
       }*/
-      if (!haveNoOverdueToDosExists) {
+      /*   if (!haveNoOverdueToDosExists) {
         const newItem = JSON.parse(JSON.stringify(postParams));
         newItem.payload = {
           text: haveNoOverdueToDosChecklistName,
@@ -165,8 +165,8 @@ function scheduleCron() {
             );
           }
         }
-      }
-      if (!haveLessThanTwentyTodosExists) {
+      }*/
+      /*     if (!haveLessThanTwentyTodosExists) {
         const newItem = JSON.parse(JSON.stringify(postParams));
         newItem.payload = {
           text: haveLessThanTwentyTodosName,
@@ -198,9 +198,9 @@ function scheduleCron() {
             );
           }
         }
-      }
+      }*/
 
-      const functionOutput = findItemAndCreateIfDidntExist(
+      let functionOutput = findItemAndCreateIfDidntExist(
         task.checklist,
         AllCursesCheckedChecklistName,
         "All curses checked"
@@ -243,11 +243,13 @@ function scheduleCron() {
           }
         }
         //poisonsDone = true; // this is debug code
-        Logger.log("Task checklist item is " + functionOutput.text);
+        Logger.log("Task checklist item is " + AllCursesCheckedChecklistName);
         if (poisonsDone == true) {
           Logger.log("All curses checked, scoring checklist item");
           UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${functionOutput.id}/score`,
+            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${
+              functionOutput.id
+            }/score`,
             postParams
           );
           functionOutput.completed = true;
@@ -255,13 +257,10 @@ function scheduleCron() {
       }
 
       // Below code until next comment is the auto check for no soon to-dos
-      if (
-        findItemAndCreateIfDidntExist(
-          task.checklist,
-          haveNoSoonToDosChecklistName,
-          "Have no soon to-dos"
-        )
-      ) {
+      functionOutput = findItemAndCreateIfDidntExist();
+      task.checklist, haveNoSoonToDosChecklistName, "Have no soon to-dos";
+
+      if (functionOutput) {
         let today = new Date();
         let days;
         let task;
@@ -290,7 +289,7 @@ function scheduleCron() {
           return days < 13;
         }
         let soonToDosExist = parsedD.data.some(toDoin14Days);
-        Logger.log("task checklist item is " + haveNoSoonToDos.text);
+        Logger.log("task checklist item is " + functionOutput.text);
         if (soonToDosExist === false) {
           Logger.log("scoring checklist item");
           UrlFetchApp.fetch(
@@ -389,11 +388,11 @@ function scheduleCron() {
 
       // All below code until the next comment is for checking checklist items' completion status and ticking the negative habit if they aren't completed.
       if (
-        findItemAndCreateIfDidntExist(
+        (findItemAndCreateIfDidntExist(
           task.checklist,
           AllCursesCheckedChecklistName,
           "All curses checked"
-        )
+        ).completed = false)
       ) {
         Logger.log(
           JSON.stringify({ functionOutput }) +
