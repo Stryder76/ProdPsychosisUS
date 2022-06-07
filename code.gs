@@ -388,13 +388,12 @@ function scheduleCron() {
       }
 
       // All below code until the next comment is for checking checklist items' completion status and ticking the negative habit if they aren't completed.
-      if (
-        (findItemAndCreateIfDidntExist(
-          task.checklist,
-          AllCursesCheckedChecklistName,
-          "All curses checked"
-        ).completed = false)
-      ) {
+      const allCursesCheckedOutput = findItemAndCreateIfDidntExist(
+        task.checklist,
+        AllCursesCheckedChecklistName,
+        "All curses checked"
+      );
+      if (allCursesCheckedOutput.completed == false) {
         Logger.log(
           JSON.stringify({ functionOutput }) +
             " checklist item " +
@@ -414,7 +413,12 @@ function scheduleCron() {
           scoreHabit(habit.id);
         }
       }
-      if (haveNoSoonToDos.completed == false) {
+      const haveNoSoonToDosOutput = findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveNoSoonToDosChecklistName,
+        "Have no soon to-dos"
+      );
+      if (haveNoSoonToDosOutput.completed == false) {
         Logger.log(
           JSON.stringify({ haveNoSoonToDos }) +
             " Checklist item " +
