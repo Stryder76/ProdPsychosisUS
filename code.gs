@@ -66,18 +66,18 @@ function scheduleCron() {
       var taskId = task.id;
 
       // This for loop looks through the checklist of the correct task and checks to see if the checklist items exist, if they do it communicates that to another code section through a function output and moves on, otherwise nothing happens
-      
-        findItemAndCreateIfDidntExist(
-          task.checklist,
-          AllCursesCheckedChecklistName,
-          "All curses checked"
-        );
-        findItemAndCreateIfDidntExist(
-          task.checklist,
-          haveNoSoonToDosChecklistName,
-          "Have no soon to-dos"
-        );
-        /*
+
+      findItemAndCreateIfDidntExist(
+        task.checklist,
+        AllCursesCheckedChecklistName,
+        "All curses checked"
+      );
+      findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveNoSoonToDosChecklistName,
+        "Have no soon to-dos"
+      );
+      /*
 
       findItemAndCreateIfDidntExist(
         check,
@@ -97,7 +97,7 @@ function scheduleCron() {
         "Have a low to-do count"
       );
       */
-      
+
       // These below if statements check to see if the checklist items don't exist and if so create them
 
       /* if (!haveNoSoonToDosExists) {
@@ -247,9 +247,7 @@ function scheduleCron() {
         if (poisonsDone == true) {
           Logger.log("All curses checked, scoring checklist item");
           UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${
-              functionOutput.id
-            }/score`,
+            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${functionOutput.id}/score`,
             postParams
           );
           functionOutput.completed = true;
@@ -257,8 +255,11 @@ function scheduleCron() {
       }
 
       // Below code until next comment is the auto check for no soon to-dos
-      functionOutput = findItemAndCreateIfDidntExist();
-      task.checklist, haveNoSoonToDosChecklistName, "Have no soon to-dos";
+      functionOutput = findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveNoSoonToDosChecklistName,
+        "Have no soon to-dos"
+      );
 
       if (functionOutput) {
         let today = new Date();
