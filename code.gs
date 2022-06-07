@@ -77,26 +77,20 @@ function scheduleCron() {
         haveNoSoonToDosChecklistName,
         "Have no soon to-dos"
       );
-      /*
+      
 
       findItemAndCreateIfDidntExist(
-        check,
+        task.checklist,
         haveNoOverdueToDosChecklistName,
-        haveNoOverdueToDosExists,
-        haveNoOverdueTodos,
-        haveNoOverdueToDosID,
         "Have no over Due To-Dos"
       );
 
-      ifItemExists(
-        check,
+      findItemAndCreateIfDidntExist(
+        task.checklist,
         haveLessThanTwentyTodosName,
-        haveLessThanTwentyTodosExists,
-        haveLessThanTwentyTodos,
-        haveLessThanTwentyTodosID,
         "Have a low to-do count"
       );
-      */
+      
 
       // These below if statements check to see if the checklist items don't exist and if so create them
 
@@ -200,12 +194,12 @@ function scheduleCron() {
         }
       }*/
 
-      let functionOutput = findItemAndCreateIfDidntExist(
+      const allCursesCheckedOutputForScoring = findItemAndCreateIfDidntExist(
         task.checklist,
         AllCursesCheckedChecklistName,
         "All curses checked"
       );
-      if (functionOutput) {
+      if (allCursesCheckedOutputForScoring) {
         // Below code until next comment is the auto check for all curses done, I plan on adding more arrays that you can toggle the concatination of to allow for the addon challenge and other difficulties, sorrt for any inconvenience
         const defaultEasyChallengePoisons = [
           "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Time Magic",
@@ -225,19 +219,19 @@ function scheduleCron() {
         );
         let parsedDT = JSON.parse(dailyTasks.getContentText());
         let poisonsDone = true;
-        for (task of parsedDT.data) {
+        for (possibleCurseTask of parsedDT.data) {
           let isPoisonTitle = false;
           for (poisonTitle of defaultEasyChallengePoisons) {
             if (
               poisonTitle.trim().toLowerCase() ===
-              task.text.trim().toLowerCase()
+              possibleCurseTask.text.trim().toLowerCase()
             ) {
               isPoisonTitle = true;
               break;
             }
           }
 
-          if (isPoisonTitle === true && task.completed === false) {
+          if (isPoisonTitle === true && possibleCurseTask.completed === false) {
             poisonsDone = false;
             break;
           }
@@ -247,21 +241,21 @@ function scheduleCron() {
         if (poisonsDone == true) {
           Logger.log("All curses checked, scoring checklist item");
           UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${functionOutput.id}/score`,
+            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${allCursesCheckedOutputForScoring.id}/score`,
             postParams
           );
-          functionOutput.completed = true;
+          allCursesCheckedOutputForScoring.completed = true;
         }
       }
 
       // Below code until next comment is the auto check for no soon to-dos
-      functionOutput = findItemAndCreateIfDidntExist(
+      const haveNoSoonToDosOutputForScoring = findItemAndCreateIfDidntExist(
         task.checklist,
         haveNoSoonToDosChecklistName,
         "Have no soon to-dos"
       );
 
-      if (functionOutput) {
+      if (haveNoSoonToDosOutputForScoring) {
         let today = new Date();
         let days;
         let task;
@@ -290,7 +284,7 @@ function scheduleCron() {
           return days < 13;
         }
         let soonToDosExist = parsedD.data.some(toDoin14Days);
-        Logger.log("task checklist item is " + functionOutput.text);
+        Logger.log("task checklist item is " + haveNoSoonToDosOutputForScoring.text);
         if (soonToDosExist === false) {
           Logger.log("scoring checklist item");
           UrlFetchApp.fetch(
@@ -395,7 +389,7 @@ function scheduleCron() {
       );
       if (allCursesCheckedOutput.completed == false) {
         Logger.log(
-          JSON.stringify({ functionOutput }) +
+          JSON.stringify({ haveNoSoonToDosOutputForScoring }) +
             " checklist item " +
             "failed deducting health..."
         );
@@ -420,7 +414,7 @@ function scheduleCron() {
       );
       if (haveNoSoonToDosOutput.completed == false) {
         Logger.log(
-          JSON.stringify({ haveNoSoonToDos }) +
+          JSON.stringify({ haveNoSoonToDosOutput }) +
             " Checklist item " +
             " failed deducting health..."
         );
@@ -440,9 +434,14 @@ function scheduleCron() {
           scoreHabit(habit.id);
         }
       }
-      if (haveNoOverdueTodos.completed == false) {
+      const haveNoOverDueTodosOutput = findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveNoOverdueToDosChecklistName,
+        "Have no over Due To-Dos"
+      );
+      if (haveNoOverDueTodosOutput.completed == false) {
         Logger.log(
-          JSON.stringify({ haveNoOverdueTodos }) +
+          JSON.stringify({ haveNoOverDueTodosOutput }) +
             " checklist failed deducting health..."
         );
         response = UrlFetchApp.fetch(
@@ -463,9 +462,14 @@ function scheduleCron() {
           scoreHabit(habit.id);
         }
       }
-      if (haveLessThanTwentyTodos.completed == false) {
+      const haveLessThanTwentyTodosOutput = findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveLessThanTwentyTodosName,
+        "Have a low to-do count"
+      );
+      if (haveLessThanTwentyTodosOutput.completed == false) {
         Logger.log(
-          JSON.stringify({ haveLessThanTwentyTodos }) +
+          JSON.stringify({ haveLessThanTwentyTodosOutput }) +
             " checklist item " +
             "failed deducting health..."
         );
@@ -532,7 +536,7 @@ function scheduleCron() {
             ", its ID is: " +
             checklistItem.id
         );
-        return check;
+        return checklistItem;
       }
       return null;
     }
