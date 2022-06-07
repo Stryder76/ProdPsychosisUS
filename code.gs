@@ -308,7 +308,8 @@ function scheduleCron() {
       }
 
       // Below code until next comment is the auto checking for no overdue to-dos
-      if (haveNoOverdueToDosExists === true) {
+      
+      if (haveNoOverDueTodosOutput) {
         let overdue = false;
         let today;
         today = new Date();
