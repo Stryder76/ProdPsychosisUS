@@ -49,16 +49,6 @@ function scheduleCron() {
   );
   response = JSON.parse(response.getContentText());
   Logger.log("Searching for the task: " + taskName);
-  let haveNoSoonToDos;
-  let haveNoOverdueTodos;
-  let haveLessThanTwentyTodos;
-  let allCursesCheckedID;
-  let haveNoSoonToDosID;
-  let haveNoOverdueToDosID;
-  let haveLessThanTwentyTodosID;
-  let haveNoSoonToDosExists = false;
-  let haveNoOverdueToDosExists = false;
-  let haveLessThanTwentyTodosExists = false;
   // This for loop goes through every task and checks to see if it's the same as the chosen daily up top.
   for (task of response.data) {
     if (task.text.trim().toLowerCase() === taskName.trim().toLowerCase()) {
