@@ -49,6 +49,16 @@ function scheduleCron() {
   );
   response = JSON.parse(response.getContentText());
   Logger.log("Searching for the task: " + taskName);
+  let haveNoSoonToDos;
+  let haveNoOverdueTodos;
+  let haveLessThanTwentyTodos;
+  let allCursesCheckedID;
+  let haveNoSoonToDosID;
+  let haveNoOverdueToDosID;
+  let haveLessThanTwentyTodosID;
+  let haveNoSoonToDosExists = false;
+  let haveNoOverdueToDosExists = false;
+  let haveLessThanTwentyTodosExists = false;
   // This for loop goes through every task and checks to see if it's the same as the chosen daily up top.
   for (task of response.data) {
     if (task.text.trim().toLowerCase() === taskName.trim().toLowerCase()) {
@@ -56,31 +66,49 @@ function scheduleCron() {
       var taskId = task.id;
 
       // This for loop looks through the checklist of the correct task and checks to see if the checklist items exist, if they do it communicates that to another code section through a function output and moves on, otherwise nothing happens
-
+      const allCursesCheckedOutput = findItemAndCreateIfDidntExist(
+        task.checklist,
+        AllCursesCheckedChecklistName,
+        "All curses checked"
+      ); /*
       findItemAndCreateIfDidntExist(
         task.checklist,
         AllCursesCheckedChecklistName,
         "All curses checked"
       );
-      findItemAndCreateIfDidntExist(
+      */
+      const haveNoSoonToDosOutput = findItemAndCreateIfDidntExist(
         task.checklist,
         haveNoSoonToDosChecklistName,
         "Have no soon to-dos"
       );
-      
-
-      findItemAndCreateIfDidntExist(
+      /*   findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveNoSoonToDosChecklistName,
+        "Have no soon to-dos"
+      );*/
+      const haveNoOverDueTodosOutput = findItemAndCreateIfDidntExist(
         task.checklist,
         haveNoOverdueToDosChecklistName,
         "Have no over Due To-Dos"
       );
 
-      findItemAndCreateIfDidntExist(
+      /*    findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveNoOverdueToDosChecklistName,
+        "Have no over Due To-Dos"
+      );*/
+      const haveLessThanTwentyTodosOutput = findItemAndCreateIfDidntExist(
         task.checklist,
         haveLessThanTwentyTodosName,
         "Have a low to-do count"
       );
-      
+      /*
+      findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveLessThanTwentyTodosName,
+        "Have a low to-do count"
+      );*/
 
       // These below if statements check to see if the checklist items don't exist and if so create them
 
@@ -184,12 +212,12 @@ function scheduleCron() {
         }
       }*/
 
-      const allCursesCheckedOutputForScoring = findItemAndCreateIfDidntExist(
+      /*const allCursesCheckedOutputForScoring = findItemAndCreateIfDidntExist(
         task.checklist,
         AllCursesCheckedChecklistName,
         "All curses checked"
-      );
-      if (allCursesCheckedOutputForScoring) {
+      );*/
+      if (allCursesCheckedOutput) {
         // Below code until next comment is the auto check for all curses done, I plan on adding more arrays that you can toggle the concatination of to allow for the addon challenge and other difficulties, sorrt for any inconvenience
         const defaultEasyChallengePoisons = [
           "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Time Magic",
@@ -226,26 +254,27 @@ function scheduleCron() {
             break;
           }
         }
-        //poisonsDone = true; // this is debug code
+        poisonsDone = true; // this is debug code
         Logger.log("Task checklist item is " + AllCursesCheckedChecklistName);
         if (poisonsDone == true) {
           Logger.log("All curses checked, scoring checklist item");
           UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${allCursesCheckedOutputForScoring.id}/score`,
+            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${allCursesCheckedOutput.id}/score`,
             postParams
           );
-          allCursesCheckedOutputForScoring.completed = true;
+          //allCursesCheckedOutput.completed = true;
+          allCursesCheckedOutput.completed = true;
         }
       }
 
       // Below code until next comment is the auto check for no soon to-dos
-      const haveNoSoonToDosOutputForScoring = findItemAndCreateIfDidntExist(
+      /*   const haveNoSoonToDosOutputForScoring = findItemAndCreateIfDidntExist(
         task.checklist,
         haveNoSoonToDosChecklistName,
         "Have no soon to-dos"
-      );
+      );*/
 
-      if (haveNoSoonToDosOutputForScoring) {
+      if (haveNoSoonToDosOutput) {
         let today = new Date();
         let days;
         let task;
@@ -266,7 +295,7 @@ function scheduleCron() {
           let day = 24 * hour;
           let diff = soonToDoDate - td;
           days = Math.floor(diff / day);
-          //days = 17; //this is debug code
+          days = 17; //this is debug code
           Logger.log(
             "due date difference from today is" + " " + "%s days",
             days
@@ -274,31 +303,23 @@ function scheduleCron() {
           return days < 13;
         }
         let soonToDosExist = parsedD.data.some(toDoin14Days);
-        Logger.log("task checklist item is " + haveNoSoonToDosOutputForScoring.text);
-        if (soonToDosExist === false) {
+        Logger.log("task checklist item is " + haveNoSoonToDosOutput.text);
+           if (soonToDosExist === false) {
           Logger.log("scoring checklist item");
           UrlFetchApp.fetch(
             `https://habitica.com/api/v3/tasks/${taskId}/checklist/${
-              findItemAndCreateIfDidntExist(
-                task.checklist,
-                haveNoSoonToDosChecklistName,
-                "Have no soon to-dos"
-              ).id
+haveNoSoonToDosOutput.id
             }/score`,
             postParams
           );
-          findItemAndCreateIfDidntExist(
-            task.checklist,
-            haveNoSoonToDosChecklistName,
-            "Have no soon to-dos"
-          ).completed = true;
+    haveNoSoonToDosOutput.completed = true;
         }
       } else {
         Logger.log("something went wrong");
       }
 
       // Below code until next comment is the auto checking for no overdue to-dos
-      
+
       if (haveNoOverDueTodosOutput) {
         let overdue = false;
         let today;
@@ -328,27 +349,27 @@ function scheduleCron() {
             ToDoDate.getMonth(),
             ToDoDate.getDate()
           );
-          //ToDoDate = today; // this is debug code
+          ToDoDate = today; // this is debug code
           Logger.log({ ToDoDate, today, today });
           if (ToDoDate < today) {
             overdue = true;
             break;
           }
         }
-        Logger.log("task checklist item is " + haveNoOverdueTodos.text);
+        Logger.log("task checklist item is " + haveNoOverDueTodosOutput.text);
         if (overdue === false) {
           Logger.log("scoring checklist item");
           UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoOverdueToDosID}/score`,
+            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoOverDueTodosOutput.id}/score`,
             postParams
           );
-          haveNoOverdueTodos.completed = true;
+          haveNoOverDueTodosOutput.completed = true;
         }
       } else {
         Logger.log("something went wrong");
       }
 
-      if (haveLessThanTwentyTodosExists === true) {
+      if (haveLessThanTwentyTodosOutput) {
         let toDoCount = 0;
         let toDoLimit = 20; // change this to whatever your goal for your to-do count is
         let d = UrlFetchApp.fetch(
@@ -359,28 +380,23 @@ function scheduleCron() {
         for (task of parsedD.data) {
           toDoCount = toDoCount + 1;
         }
-        //toDoCount = 10; // this is debug code
+        toDoCount = 10; // this is debug code
         if (toDoCount < toDoLimit) {
           Logger.log("scoring checklist item");
           UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveLessThanTwentyTodosID}/score`,
+            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveLessThanTwentyTodosOutput.id}/score`,
             postParams
           );
-          haveLessThanTwentyTodos.completed = true;
+          haveLessThanTwentyTodosOutput.completed = true;
         }
       } else {
         Logger.log("something went wrong");
       }
 
       // All below code until the next comment is for checking checklist items' completion status and ticking the negative habit if they aren't completed.
-      const allCursesCheckedOutput = findItemAndCreateIfDidntExist(
-        task.checklist,
-        AllCursesCheckedChecklistName,
-        "All curses checked"
-      );
       if (allCursesCheckedOutput.completed == false) {
         Logger.log(
-          JSON.stringify({ haveNoSoonToDosOutputForScoring }) +
+          JSON.stringify({ haveNoSoonToDosOutput }) +
             " checklist item " +
             "failed deducting health..."
         );
@@ -398,11 +414,6 @@ function scheduleCron() {
           scoreHabit(habit.id);
         }
       }
-      const haveNoSoonToDosOutput = findItemAndCreateIfDidntExist(
-        task.checklist,
-        haveNoSoonToDosChecklistName,
-        "Have no soon to-dos"
-      );
       if (haveNoSoonToDosOutput.completed == false) {
         Logger.log(
           JSON.stringify({ haveNoSoonToDosOutput }) +
@@ -425,11 +436,6 @@ function scheduleCron() {
           scoreHabit(habit.id);
         }
       }
-      const haveNoOverDueTodosOutput = findItemAndCreateIfDidntExist(
-        task.checklist,
-        haveNoOverdueToDosChecklistName,
-        "Have no over Due To-Dos"
-      );
       if (haveNoOverDueTodosOutput.completed == false) {
         Logger.log(
           JSON.stringify({ haveNoOverDueTodosOutput }) +
@@ -453,11 +459,6 @@ function scheduleCron() {
           scoreHabit(habit.id);
         }
       }
-      const haveLessThanTwentyTodosOutput = findItemAndCreateIfDidntExist(
-        task.checklist,
-        haveLessThanTwentyTodosName,
-        "Have a low to-do count"
-      );
       if (haveLessThanTwentyTodosOutput.completed == false) {
         Logger.log(
           JSON.stringify({ haveLessThanTwentyTodosOutput }) +
