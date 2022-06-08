@@ -22,18 +22,18 @@ There is a list of ideas for how you can modify this in the [challenge](https://
 
 I plan on adding another guide for adding your own checklist items here.
 
+Contnet update
+    have a requirement for less than 20 to-dos - done
 
-have a requirement for less than 20 to-dos - done 
+    Have a requirement for 4 to-dos done - queued and unknown in regards to how to execute on it
 
-restructure code with functions - currently working on
+    Have a requirement for 5 checklist items on to-dos clicked - queued and unknown in regards to how to execute on it
+    
+Restructuring update
 
-Have a requirement for 4 to-dos done - queued and unknown in regards to how to execute on it
+    Make to-do blacklisting for the to-do oreintated checklist items. This will allow stuff like monthly reviews which can only be done a few days ahead of time to work properly - queued and unknown in regards to how to execute on it
 
-Have a requirement for 5 checklist items on to-dos clicked - queued and unknown in regards to how to execute on it
+    Uncheck all items when false - queued
 
-Make to-do blacklisting for the overdue and no soon to-do checklist items. This will allow stuff like monthly reviews which can only be done a few days ahead of time to work properly - queued and unknown in regards to how to execute on it
-
-Uncheck all items when false - queued
-
-make a non user script version of the challenge with more dallies queued
+    make a non user script version of the challenge with more dallies - queued
 
