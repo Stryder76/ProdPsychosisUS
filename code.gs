@@ -11,7 +11,8 @@
 // Change the below two consts to your user ID and API token, they can be found here: 'https://habitica.com/user/settings/api'
 // Leave the quotes and replace the two # symbols and the variable name inbetween them with your ID and token
 
-const jsonString = HtmlService.createHtmlOutputFromFile("config.html").getContent();
+const jsonString =
+  HtmlService.createHtmlOutputFromFile("config.html").getContent();
 const jsonObject = JSON.parse(jsonString);
 const habId = jsonObject.habId;
 const habToken = jsonObject.habToken; // Never share your API token with anyone even on Github
@@ -48,529 +49,531 @@ function scheduleCron() {
   );
   response = JSON.parse(response.getContentText());
   Logger.log("Searching for the task: " + taskName);
-  let allCursesChecked;
-  let haveNoSoonToDos;
-  let haveNoOverdueTodos;
-  let allCursesCheckedID;
-  let haveNoSoonToDosID;
-  let haveNoOverdueToDosID;
-  let haveLessThanTwentyTodos;
-  let haveLessThanTwentyTodosID;
-  let haveLessThanTwentyTodosExists = false;
-  let allCursesCheckedExists = false;
-  let haveNoSoonToDosExists = false;
-  let haveNoOverdueToDosExists = false;
   // This for loop goes through every task and checks to see if it's the same as the chosen daily up top.
   for (task of response.data) {
     if (task.text.trim().toLowerCase() === taskName.trim().toLowerCase()) {
       Logger.log("Found task " + task.id);
-      var taskId = task.id
-      // This for loop looks through the checklist of the correct task and checks to see if the checklist items exist, if they do it communicates that to another code section through a variable and moves on, otherwise nothing happens
-      for (check of task.checklist) {
-        if (
-          check.text.trim().toLowerCase() ===
-          AllCursesCheckedChecklistName.trim().toLowerCase()
-        ) {
-          allCursesCheckedExists = true;
-          allCursesChecked = check;
-          allCursesCheckedID = allCursesChecked.id;
-          Logger.log(
-            "Curse completion item name is" +
-              " " +
-              "'" +
-              allCursesChecked.text +
-              "'" +
-              ", its ID is: " +
-              allCursesCheckedID
-          );
-        }
-        if (
-          check.text.trim().toLowerCase() ===
-          haveNoSoonToDosChecklistName.trim().toLowerCase()
-        ) {
-          haveNoSoonToDosExists = true;
-          haveNoSoonToDos = check;
-          haveNoSoonToDosID = haveNoSoonToDos.id;
-          Logger.log(
-            "No soon ToDo's title is:" +
-              " " +
-              "'" +
-              haveNoSoonToDos.text +
-              "'" +
-              ", its id is: " +
-              haveNoSoonToDosID
-          );
-        }
-        if (
-          check.text.trim().toLowerCase() ===
-          haveNoOverdueToDosChecklistName.trim().toLowerCase()
-        ) {
-          haveNoOverdueToDosExists = true;
-          haveNoOverdueTodos = check;
-          haveNoOverdueToDosID = haveNoOverdueTodos.id;
-          Logger.log(
-            "No Over Due To-Do item's title is: " +
-              "'" +
-              haveNoOverdueTodos.text +
-              "'" +
-              ", its id is: " +
-              haveNoOverdueToDosID
-          );
-        }
-        if (
-          check.text.trim().toLowerCase() ===
-          haveLessThanTwentyTodosName.trim().toLowerCase()
-        ) {
-          haveLessThanTwentyTodosExists = true;
-          haveLessThanTwentyTodos = check;
-          haveLessThanTwentyTodosID = haveLessThanTwentyTodos.id;
-          Logger.log(
-            "Low to-do count item name is" +
-              " " +
-              "'" +
-              haveLessThanTwentyTodos.text +
-              "'" +
-              ", its ID is: " +
-              haveLessThanTwentyTodosID
-          );
-        }
-      }
-        // These below if statements check to see if the checklist items don't exist and if so create them
-        if (!allCursesCheckedExists) {
-          const newItem = JSON.parse(JSON.stringify(postParams));
-          newItem.payload = {
-            text: AllCursesCheckedChecklistName,
-          };
-          const newCursesCompletedItemResponse = UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/`,
-            newItem
-          );
-          const newCursesCompletedItem = JSON.parse(
-            newCursesCompletedItemResponse.getContentText()
-          );
-          // below code is looking for the checklist item that was just made to properly define the variable
-          for (checklistItem of newCursesCompletedItem.data.checklist) {
-            if (
-              checklistItem.text.trim().toLowerCase() ===
-              AllCursesCheckedChecklistName.trim().toLowerCase()
-            ) {
-              allCursesCheckedExists = true;
-              allCursesChecked = checklistItem;
-              allCursesCheckedID = allCursesChecked.id;
-              Logger.log(
-                "Curse completion item did not exist, it has been made; it's title is" +
-                  " " +
-                  "'" +
-                  allCursesChecked.text +
-                  "'" +
-                  ", its ID is: " +
-                  allCursesCheckedID
-              );
-            }
-          }
-        }
-        if (!haveNoSoonToDosExists) {
-          const newItem = JSON.parse(JSON.stringify(postParams));
-          newItem.payload = {
-            text: haveNoSoonToDosChecklistName,
-          };
-          const NoSoonToDosItemResponse = UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/`,
-            newItem
-          );
-          const NoSoonToDosItem = JSON.parse(
-            NoSoonToDosItemResponse.getContentText()
-          );
-          // below code is looking for the checklist item that was just made to properly define the variable
-          for (checklistItem of NoSoonToDosItem.data.checklist) {
-            if (
-              checklistItem.text.trim().toLowerCase() ===
-              haveNoSoonToDosChecklistName.trim().toLowerCase()
-            ) {
-              haveNoSoonToDosExists = true;
-              haveNoSoonToDos = checklistItem;
-              haveNoSoonToDosID = haveNoSoonToDos.id;
-              Logger.log(
-                "Have no soon to-dos item did not exist, it has been made; it's title is" +
-                  " " +
-                  "'" +
-                  haveNoSoonToDos.text +
-                  "'" +
-                  ", its ID is: " +
-                  haveNoSoonToDosID
-              );
-            }
-          }
-        }
-        if (!haveNoOverdueToDosExists) {
-          const newItem = JSON.parse(JSON.stringify(postParams));
-          newItem.payload = {
-            text: haveNoOverdueToDosChecklistName,
-          };
-          const NoOverdueToDosItemResponse = UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/`,
-            newItem
-          );
-          const NoOverDueToDosItem = JSON.parse(
-            NoOverdueToDosItemResponse.getContentText()
-          );
-          // below code is looking for the checklist item that was just made to properly define the variable
-          for (checklistItem of NoOverDueToDosItem.data.checklist) {
-            if (
-              checklistItem.text.trim().toLowerCase() ===
-              haveNoOverdueToDosChecklistName.trim().toLowerCase()
-            ) {
-              haveNoOverdueToDosExists = true;
-              haveNoOverdueTodos = checklistItem;
-              haveNoOverdueToDosID = haveNoOverdueTodos.id;
-              Logger.log(
-                "no over due to-dos item did not exist, it has been made; it's title is" +
-                  " " +
-                  "'" +
-                  haveNoOverdueTodos.text +
-                  "'" +
-                  ", its ID is: " +
-                  haveNoOverdueToDosID
-              );
-            }
-          }
-        }
-        if (!haveLessThanTwentyTodosExists) {
-          const newItem = JSON.parse(JSON.stringify(postParams));
-          newItem.payload = {
-            text: haveLessThanTwentyTodosName,
-          };
-          const haveLessThanTwentyTodosResponse = UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/`,
-            newItem
-          );
-          const havelessThanTwentyTodosItem = JSON.parse(
-            haveLessThanTwentyTodosResponse.getContentText()
-          );
-          // below code is looking for the checklist item that was just made to properly define the variable
-          for (checklistItem of havelessThanTwentyTodosItem.data.checklist) {
-            if (
-              checklistItem.text.trim().toLowerCase() ===
-              haveLessThanTwentyTodosName.trim().toLowerCase()
-            ) {
-              haveLessThanTwentyTodosExists = true;
-              haveLessThanTwentyTodos = checklistItem;
-              haveLessThanTwentyTodosID = haveLessThanTwentyTodos.id;
-              Logger.log(
-                "Low to-do count item did not exist, it has been made. It's title is" +
-                  " " +
-                  "'" +
-                  haveLessThanTwentyTodos.text +
-                  "'" +
-                  ", its ID is: " +
-                  haveLessThanTwentyTodosID
-              );
-            }
-          }
-        }
-      }
-    }
+      var taskId = task.id;
 
-    if (allCursesCheckedExists === true) {
-      // Below code until next comment is the auto check for all curses done, I plan on adding more arrays that you can toggle the concatination of to allow for the addon challenge and other difficulties, sorrt for any inconvenience
-      const defaultEasyChallengePoisons = [
-        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Time Magic",
-        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Ritual Preparation",
-        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Volunteering curse",
-        "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Old Magician's Curse",
-        "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Questing for Ingredient",
-        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Mana Vampirism Curse",
-        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Organizational Curse",
-        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Curse of the To-Do Bosses",
-        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Procrastinator's Curse",
-        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Villian's Curse",
-      ];
-      let dailyTasks = UrlFetchApp.fetch(
-        "https://habitica.com/api/v3/tasks/user?type=dailys",
-        getParams
+      // This for loop looks through the checklist of the correct task and checks to see if the checklist items exist, if they do it communicates that to another code section through a function output and moves on, otherwise nothing happens
+      const allCursesCheckedOutput = findItemAndCreateIfDidntExist(
+        task.checklist,
+        AllCursesCheckedChecklistName,
+        "All curses checked"
+      ); /*
+      findItemAndCreateIfDidntExist(
+        task.checklist,
+        AllCursesCheckedChecklistName,
+        "All curses checked"
       );
-      let parsedDT = JSON.parse(dailyTasks.getContentText());
-      let poisonsDone = true;
-      for (task of parsedDT.data) {
-        let isPoisonTitle = false;
-        for (poisonTitle of defaultEasyChallengePoisons) {
+      */
+      const haveNoSoonToDosOutput = findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveNoSoonToDosChecklistName,
+        "Have no soon to-dos"
+      );
+      /*   findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveNoSoonToDosChecklistName,
+        "Have no soon to-dos"
+      );*/
+      const haveNoOverDueTodosOutput = findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveNoOverdueToDosChecklistName,
+        "Have no over Due To-Dos"
+      );
+
+      /*    findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveNoOverdueToDosChecklistName,
+        "Have no over Due To-Dos"
+      );*/
+      const haveLessThanTwentyTodosOutput = findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveLessThanTwentyTodosName,
+        "Have a low to-do count"
+      );
+      /*
+      findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveLessThanTwentyTodosName,
+        "Have a low to-do count"
+      );*/
+
+      // These below if statements check to see if the checklist items don't exist and if so create them
+
+      /* if (!haveNoSoonToDosExists) {
+        const newItem = JSON.parse(JSON.stringify(postParams));
+        newItem.payload = {
+          text: haveNoSoonToDosChecklistName,
+        };
+        const NoSoonToDosItemResponse = UrlFetchApp.fetch(
+          `https://habitica.com/api/v3/tasks/${taskId}/checklist/`,
+          newItem
+        );
+        const NoSoonToDosItem = JSON.parse(
+          NoSoonToDosItemResponse.getContentText()
+        );
+        // below code is looking for the checklist item that was just made to properly define the variable
+        for (checklistItem of NoSoonToDosItem.data.checklist) {
           if (
-            poisonTitle.trim().toLowerCase() === task.text.trim().toLowerCase()
+            checklistItem.text.trim().toLowerCase() ===
+            haveNoSoonToDosChecklistName.trim().toLowerCase()
           ) {
-            isPoisonTitle = true;
+            haveNoSoonToDosExists = true;
+            haveNoSoonToDos = checklistItem;
+            haveNoSoonToDosID = haveNoSoonToDos.id;
+            Logger.log(
+              "Have no soon to-dos item did not exist, it has been made; it's title is" +
+                " " +
+                "'" +
+                haveNoSoonToDos.text +
+                "'" +
+                ", its ID is: " +
+                haveNoSoonToDosID
+            );
+          }
+        }
+      }*/
+      /*   if (!haveNoOverdueToDosExists) {
+        const newItem = JSON.parse(JSON.stringify(postParams));
+        newItem.payload = {
+          text: haveNoOverdueToDosChecklistName,
+        };
+        const NoOverdueToDosItemResponse = UrlFetchApp.fetch(
+          `https://habitica.com/api/v3/tasks/${taskId}/checklist/`,
+          newItem
+        );
+        const NoOverDueToDosItem = JSON.parse(
+          NoOverdueToDosItemResponse.getContentText()
+        );
+        // below code is looking for the checklist item that was just made to properly define the variable
+        for (checklistItem of NoOverDueToDosItem.data.checklist) {
+          if (
+            checklistItem.text.trim().toLowerCase() ===
+            haveNoOverdueToDosChecklistName.trim().toLowerCase()
+          ) {
+            haveNoOverdueToDosExists = true;
+            haveNoOverdueTodos = checklistItem;
+            haveNoOverdueToDosID = haveNoOverdueTodos.id;
+            Logger.log(
+              "no over due to-dos item did not exist, it has been made; it's title is" +
+                " " +
+                "'" +
+                haveNoOverdueTodos.text +
+                "'" +
+                ", its ID is: " +
+                haveNoOverdueToDosID
+            );
+          }
+        }
+      }*/
+      /*     if (!haveLessThanTwentyTodosExists) {
+        const newItem = JSON.parse(JSON.stringify(postParams));
+        newItem.payload = {
+          text: haveLessThanTwentyTodosName,
+        };
+        const haveLessThanTwentyTodosResponse = UrlFetchApp.fetch(
+          `https://habitica.com/api/v3/tasks/${taskId}/checklist/`,
+          newItem
+        );
+        const havelessThanTwentyTodosItem = JSON.parse(
+          haveLessThanTwentyTodosResponse.getContentText()
+        );
+        // below code is looking for the checklist item that was just made to properly define the variable
+        for (checklistItem of havelessThanTwentyTodosItem.data.checklist) {
+          if (
+            checklistItem.text.trim().toLowerCase() ===
+            haveLessThanTwentyTodosName.trim().toLowerCase()
+          ) {
+            haveLessThanTwentyTodosExists = true;
+            haveLessThanTwentyTodos = checklistItem;
+            haveLessThanTwentyTodosID = haveLessThanTwentyTodos.id;
+            Logger.log(
+              "Low to-do count item did not exist, it has been made. It's title is" +
+                " " +
+                "'" +
+                haveLessThanTwentyTodos.text +
+                "'" +
+                ", its ID is: " +
+                haveLessThanTwentyTodosID
+            );
+          }
+        }
+      }*/
+
+      /*const allCursesCheckedOutputForScoring = findItemAndCreateIfDidntExist(
+        task.checklist,
+        AllCursesCheckedChecklistName,
+        "All curses checked"
+      );*/
+      if (allCursesCheckedOutput) {
+        // Below code until next comment is the auto check for all curses done, I plan on adding more arrays that you can toggle the concatination of to allow for the addon challenge and other difficulties, sorrt for any inconvenience
+        const defaultEasyChallengePoisons = [
+          "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Time Magic",
+          "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Ritual Preparation",
+          "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Volunteering curse",
+          "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Old Magician's Curse",
+          "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Questing for Ingredient",
+          "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Mana Vampirism Curse",
+          "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Organizational Curse",
+          "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Curse of the To-Do Bosses",
+          "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Procrastinator's Curse",
+          "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Villian's Curse",
+        ];
+        let dailyTasks = UrlFetchApp.fetch(
+          "https://habitica.com/api/v3/tasks/user?type=dailys",
+          getParams
+        );
+        let parsedDT = JSON.parse(dailyTasks.getContentText());
+        let poisonsDone = true;
+        for (possibleCurseTask of parsedDT.data) {
+          let isPoisonTitle = false;
+          for (poisonTitle of defaultEasyChallengePoisons) {
+            if (
+              poisonTitle.trim().toLowerCase() ===
+              possibleCurseTask.text.trim().toLowerCase()
+            ) {
+              isPoisonTitle = true;
+              break;
+            }
+          }
+
+          if (isPoisonTitle === true && possibleCurseTask.completed === false) {
+            poisonsDone = false;
             break;
           }
         }
-
-        if (isPoisonTitle === true && task.completed === false) {
-          poisonsDone = false;
-          break;
+        //poisonsDone = true; // this is debug code
+        Logger.log("Task checklist item is " + AllCursesCheckedChecklistName);
+        if (poisonsDone == true) {
+          Logger.log("All curses checked, scoring checklist item");
+          UrlFetchApp.fetch(
+            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${allCursesCheckedOutput.id}/score`,
+            postParams
+          );
+          allCursesCheckedOutput.completed = true;
         }
       }
-      //poisonsDone = true; // this is debug code
-      Logger.log("Task checklist item is " + allCursesChecked.text);
-      if (poisonsDone == true) {
-        Logger.log("All curses checked, scoring checklist item");
-        UrlFetchApp.fetch(
-          `https://habitica.com/api/v3/tasks/${taskId}/checklist/${allCursesCheckedID}/score`,
-          postParams
-        );
-        allCursesChecked.completed = true;
-      }
-    } else {
-      Logger.log("something went wrong");
-    }
 
-    // Below code until next comment is the auto check for no soon to-dos
-    if (haveNoSoonToDosExists === true) {
-      let today = new Date();
-      let days;
-      let task;
-      let soonToDoDate;
-      let d = UrlFetchApp.fetch(
-        "https://habitica.com/api/v3/tasks/user?type=todos",
-        getParams
-      );
-      let parsedD = JSON.parse(d.getContentText());
-      function toDoin14Days(value) {
-        task = value;
-        soonToDoDate = new Date(task.date).valueOf();
-        let todayUTC = today;
-        let td = new Date(todayUTC).valueOf();
-        let sec = 1000;
-        let min = 60 * sec;
-        let hour = 60 * min;
-        let day = 24 * hour;
-        let diff = soonToDoDate - td;
-        days = Math.floor(diff / day);
-        //days = 17; //this is debug code
-        Logger.log("due date difference from today is" + " " + "%s days", days);
-        return days < 13;
-      }
-      let soonToDosExist = parsedD.data.some(toDoin14Days);
-      Logger.log("task checklist item is " + haveNoSoonToDos.text);
-      if (soonToDosExist === false) {
-        Logger.log("scoring checklist item");
-        UrlFetchApp.fetch(
-          `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoSoonToDosID}/score`,
-          postParams
-        );
-        haveNoSoonToDos.completed = true;
-      }
-    } else {
-      Logger.log("something went wrong");
-    }
+      // Below code until next comment is the auto check for no soon to-dos
+      /*   const haveNoSoonToDosOutputForScoring = findItemAndCreateIfDidntExist(
+        task.checklist,
+        haveNoSoonToDosChecklistName,
+        "Have no soon to-dos"
+      );*/
 
-    // Below code until next comment is the auto checking for no overdue to-dos
-    if (haveNoOverdueToDosExists === true) {
-      let overdue = false;
-      let today;
-      today = new Date();
-      today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      //tomorrow.setDate(tomorrow.getDate()+1)
-      let sec;
-      let min;
-      let hour;
-      sec = 1000;
-      min = 60 * sec;
-      hour = 60 * min;
-      day = 24 * hour;
-      let d = UrlFetchApp.fetch(
-        "https://habitica.com/api/v3/tasks/user?type=todos",
-        getParams
-      );
-      let parsedD = JSON.parse(d.getContentText());
-      for (task of parsedD.data) {
-        let ToDoDate = new Date(task.date);
-        ToDoDate = new Date(
-          ToDoDate.getFullYear(),
-          ToDoDate.getMonth(),
-          ToDoDate.getDate()
+      if (haveNoSoonToDosOutput) {
+        let today = new Date();
+        let days;
+        let task;
+        let soonToDoDate;
+        let d = UrlFetchApp.fetch(
+          "https://habitica.com/api/v3/tasks/user?type=todos",
+          getParams
         );
-        //ToDoDate = today; // this is debug code
-        Logger.log({ ToDoDate, today, today });
-        if (ToDoDate < today) {
-          overdue = true;
-          break;
+        let parsedD = JSON.parse(d.getContentText());
+        function toDoin14Days(value) {
+          task = value;
+          soonToDoDate = new Date(task.date).valueOf();
+          let todayUTC = today;
+          let td = new Date(todayUTC).valueOf();
+          let sec = 1000;
+          let min = 60 * sec;
+          let hour = 60 * min;
+          let day = 24 * hour;
+          let diff = soonToDoDate - td;
+          days = Math.floor(diff / day);
+          //days = 17; //this is debug code
+          Logger.log(
+            "due date difference from today is" + " " + "%s days",
+            days
+          );
+          return days < 13;
         }
+        let soonToDosExist = parsedD.data.some(toDoin14Days);
+        Logger.log("task checklist item is " + haveNoSoonToDosOutput.text);
+        if (soonToDosExist === false) {
+          Logger.log("scoring checklist item");
+          UrlFetchApp.fetch(
+            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoSoonToDosOutput.id}/score`,
+            postParams
+          );
+          haveNoSoonToDosOutput.completed = true;
+        }
+      } else {
+        Logger.log("something went wrong");
       }
-      Logger.log("task checklist item is " + haveNoOverdueTodos.text);
-      if (overdue === false) {
-        Logger.log("scoring checklist item");
-        UrlFetchApp.fetch(
-          `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoOverdueToDosID}/score`,
-          postParams
+
+      // Below code until next comment is the auto checking for no overdue to-dos
+
+      if (haveNoOverDueTodosOutput) {
+        let overdue = false;
+        let today;
+        today = new Date();
+        today = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate()
         );
-        haveNoOverdueTodos.completed = true;
-      }
-    } else {
-      Logger.log("something went wrong");
-    }
-
-    if (haveLessThanTwentyTodosExists === true) {
-      let toDoCount = 0;
-      let toDoLimit = 20; // change this to whatever your goal for your to-do count is
-      let d = UrlFetchApp.fetch(
-        "https://habitica.com/api/v3/tasks/user?type=todos",
-        getParams
-      );
-      let parsedD = JSON.parse(d.getContentText());
-      for (task of parsedD.data) {
-        toDoCount = toDoCount + 1;
-      }
-      //toDoCount = 10; // this is debug code
-      if (toDoCount < toDoLimit) {
-        Logger.log("scoring checklist item");
-        UrlFetchApp.fetch(
-          `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveLessThanTwentyTodosID}/score`,
-          postParams
+        //tomorrow.setDate(tomorrow.getDate()+1)
+        let sec;
+        let min;
+        let hour;
+        sec = 1000;
+        min = 60 * sec;
+        hour = 60 * min;
+        day = 24 * hour;
+        let d = UrlFetchApp.fetch(
+          "https://habitica.com/api/v3/tasks/user?type=todos",
+          getParams
         );
-        haveLessThanTwentyTodos.completed = true;
+        let parsedD = JSON.parse(d.getContentText());
+        for (task of parsedD.data) {
+          let ToDoDate = new Date(task.date);
+          ToDoDate = new Date(
+            ToDoDate.getFullYear(),
+            ToDoDate.getMonth(),
+            ToDoDate.getDate()
+          );
+          //ToDoDate = today; // this is debug code
+          Logger.log({ ToDoDate, today, today });
+          if (ToDoDate < today) {
+            overdue = true;
+            break;
+          }
+        }
+        Logger.log("task checklist item is " + haveNoOverDueTodosOutput.text);
+        if (overdue === false) {
+          Logger.log("scoring checklist item");
+          UrlFetchApp.fetch(
+            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoOverDueTodosOutput.id}/score`,
+            postParams
+          );
+          haveNoOverDueTodosOutput.completed = true;
+        }
+      } else {
+        Logger.log("something went wrong");
       }
-    } else {
-      Logger.log("something went wrong");
-    }
 
-    // All below code until the next comment is for checking checklist items' completion status and ticking the negative habit if they aren't completed.
-    if (allCursesChecked.completed == false) {
-      Logger.log(
-        JSON.stringify({ allCursesChecked }) +
-          " checklist item " +
-          "failed deducting health..."
-      );
-      response = UrlFetchApp.fetch(
-        "https://habitica.com/api/v3/tasks/user?type=habits",
-        getParams
-      );
-      response = JSON.parse(response.getContentText());
-      habit = checkHabitExists(response);
-      if (habit) {
-        // You can change the amount of habit scoring in this if statement and the below else statement to configure the punishment for failure of each checklist item, be careful with using too many as it can cause rate limiting
-        scoreHabit(habit.id);
+      if (haveLessThanTwentyTodosOutput) {
+        let toDoCount = 0;
+        let toDoLimit = 20; // change this to whatever your goal for your to-do count is
+        let d = UrlFetchApp.fetch(
+          "https://habitica.com/api/v3/tasks/user?type=todos",
+          getParams
+        );
+        let parsedD = JSON.parse(d.getContentText());
+        for (task of parsedD.data) {
+          toDoCount = toDoCount + 1;
+        }
+        //toDoCount = 10; // this is debug code
+        if (toDoCount < toDoLimit) {
+          Logger.log("scoring checklist item");
+          UrlFetchApp.fetch(
+            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveLessThanTwentyTodosOutput.id}/score`,
+            postParams
+          );
+          haveLessThanTwentyTodosOutput.completed = true;
+        }
       } else {
-        id = createHabit();
-        scoreHabit(habit.id);
+        Logger.log("something went wrong");
       }
-    }
-    if (haveNoSoonToDos.completed == false) {
-      Logger.log(
-        JSON.stringify({ haveNoSoonToDos }) +
-          " Checklist item " +
-          " failed deducting health..."
-      );
-      response = UrlFetchApp.fetch(
-        "https://habitica.com/api/v3/tasks/user?type=habits",
-        getParams
-      );
-      response = JSON.parse(response.getContentText());
-      habit = checkHabitExists(response);
-      if (habit) {
-        // You can change the amount of habit scoring in this if statement and the below else statement to configure the punishment for failure of each checklist item, be careful with using too many as it can cause rate limiting
-        scoreHabit(habit.id);
-        scoreHabit(habit.id);
-      } else {
-        id = createHabit();
-        scoreHabit(habit.id);
-        scoreHabit(habit.id);
-      }
-    }
-    if (haveNoOverdueTodos.completed == false) {
-      Logger.log(
-        JSON.stringify({ haveNoOverdueTodos }) +
-          " checklist failed deducting health..."
-      );
-      response = UrlFetchApp.fetch(
-        "https://habitica.com/api/v3/tasks/user?type=habits",
-        getParams
-      );
-      response = JSON.parse(response.getContentText());
-      habit = checkHabitExists(response);
-      if (habit) {
-        // You can change the amount of habit scoring in this if statement and the below else statement to configure the punishment for failure of each checklist item, be careful with using too many as it can cause rate limiting
-        scoreHabit(habit.id);
-        scoreHabit(habit.id);
-        scoreHabit(habit.id);
-      } else {
-        id = createHabit();
-        scoreHabit(habit.id);
-        scoreHabit(habit.id);
-        scoreHabit(habit.id);
-      }
-    }
-    if (haveLessThanTwentyTodos.completed == false) {
-      Logger.log(
-        JSON.stringify({ haveLessThanTwentyTodos }) +
-          " checklist item " +
-          "failed deducting health..."
-      );
-      response = UrlFetchApp.fetch(
-        "https://habitica.com/api/v3/tasks/user?type=habits",
-        getParams
-      );
-      response = JSON.parse(response.getContentText());
-      habit = checkHabitExists(response);
-      if (habit) {
-        // You can change the amount of habit scoring in this if statement and the below else statement to configure the punishment for failure of each checklist item, be careful with using too many as it can cause rate limiting
-        scoreHabit(habit.id);
-      } else {
-        id = createHabit();
-        scoreHabit(habit.id);
-      }
-    }
 
-    function scoreHabit(id) {
-      const postParams = {
-        method: "post",
-        headers: {
-          "x-api-user": habId,
-          "x-api-key": habToken,
-        },
-      };
-      Logger.log("Scoring the habit...");
-      response = UrlFetchApp.fetch(
-        `https://habitica.com/api/v3/tasks/${id}/score/down`,
-        postParams
-      );
-      if (response.getResponseCode() === 200) {
-        Logger.log("Scoring successful");
-      } else {
+      // All below code until the next comment is for checking checklist items' completion status and ticking the negative habit if they aren't completed.
+      if (allCursesCheckedOutput.completed == false) {
         Logger.log(
-          "There was an issue scoring the habit: " + response.getContentText()
+          JSON.stringify({ allCursesCheckedOutput }) +
+            " checklist item " +
+            "failed deducting health..."
         );
-      }
-    }
-    function createHabit() {
-      const postParams = {
-        method: "post",
-        headers: {
-          "x-api-user": habId,
-          "x-api-key": habToken,
-        },
-        payload: {
-          text: habitToCheck,
-          type: "habit",
-          up: false,
-        },
-      };
-      Logger.log("Habit not yet created, creating one...");
-      response = UrlFetchApp.fetch(
-        "https://habitica.com/api/v3/tasks/user",
-        postParams
-      );
-      if (response.getResponseCode() === 201) {
-        Logger.log("Habit created successfully");
+        response = UrlFetchApp.fetch(
+          "https://habitica.com/api/v3/tasks/user?type=habits",
+          getParams
+        );
         response = JSON.parse(response.getContentText());
-        return response.data["_id"];
-      }
-    }
-    function checkHabitExists(response) {
-      for (habit of response.data) {
-        if (
-          habit.text.trim().toLowerCase() === habitToCheck.trim().toLowerCase()
-        ) {
-          return habit;
+        habit = checkHabitExists(response);
+        if (habit) {
+          // You can change the amount of habit scoring in this if statement and the below else statement to configure the punishment for failure of each checklist item, be careful with using too many as it can cause rate limiting
+          scoreHabit(habit.id);
+        } else {
+          id = createHabit();
+          scoreHabit(habit.id);
         }
       }
-      return null;
+      if (haveNoSoonToDosOutput.completed == false) {
+        Logger.log(
+          JSON.stringify({ haveNoSoonToDosOutput }) +
+            " Checklist item " +
+            " failed deducting health..."
+        );
+        response = UrlFetchApp.fetch(
+          "https://habitica.com/api/v3/tasks/user?type=habits",
+          getParams
+        );
+        response = JSON.parse(response.getContentText());
+        habit = checkHabitExists(response);
+        if (habit) {
+          // You can change the amount of habit scoring in this if statement and the below else statement to configure the punishment for failure of each checklist item, be careful with using too many as it can cause rate limiting
+          scoreHabit(habit.id);
+          scoreHabit(habit.id);
+        } else {
+          id = createHabit();
+          scoreHabit(habit.id);
+          scoreHabit(habit.id);
+        }
+      }
+      if (haveNoOverDueTodosOutput.completed == false) {
+        Logger.log(
+          JSON.stringify({ haveNoOverDueTodosOutput }) +
+            " checklist failed deducting health..."
+        );
+        response = UrlFetchApp.fetch(
+          "https://habitica.com/api/v3/tasks/user?type=habits",
+          getParams
+        );
+        response = JSON.parse(response.getContentText());
+        habit = checkHabitExists(response);
+        if (habit) {
+          // You can change the amount of habit scoring in this if statement and the below else statement to configure the punishment for failure of each checklist item, be careful with using too many as it can cause rate limiting
+          scoreHabit(habit.id);
+          scoreHabit(habit.id);
+          scoreHabit(habit.id);
+        } else {
+          id = createHabit();
+          scoreHabit(habit.id);
+          scoreHabit(habit.id);
+          scoreHabit(habit.id);
+        }
+      }
+      if (haveLessThanTwentyTodosOutput.completed == false) {
+        Logger.log(
+          JSON.stringify({ haveLessThanTwentyTodosOutput }) +
+            " checklist item " +
+            "failed deducting health..."
+        );
+        response = UrlFetchApp.fetch(
+          "https://habitica.com/api/v3/tasks/user?type=habits",
+          getParams
+        );
+        response = JSON.parse(response.getContentText());
+        habit = checkHabitExists(response);
+        if (habit) {
+          // You can change the amount of habit scoring in this if statement and the below else statement to configure the punishment for failure of each checklist item, be careful with using too many as it can cause rate limiting
+          scoreHabit(habit.id);
+        } else {
+          id = createHabit();
+          scoreHabit(habit.id);
+        }
+      }
     }
   }
+
+  function findItemAndCreateIfDidntExist(
+    checklist,
+    itemName,
+    itemNameInLogStatement
+  ) {
+    for (check of checklist) {
+      if (check.text.trim().toLowerCase() === itemName.trim().toLowerCase()) {
+        Logger.log(
+          itemNameInLogStatement +
+            " item name is" +
+            " " +
+            "'" +
+            check.text +
+            "'" +
+            ", its ID is: " +
+            check.id
+        );
+        return check;
+      }
+    }
+
+    const newItem = JSON.parse(JSON.stringify(postParams));
+    newItem.payload = {
+      text: itemName,
+    };
+    const checklistItemResponse = UrlFetchApp.fetch(
+      `https://habitica.com/api/v3/tasks/${taskId}/checklist/`,
+      newItem
+    );
+    const Item = JSON.parse(checklistItemResponse.getContentText());
+    // below code is looking for the checklist item that was just made to properly define the variable
+    for (checklistItem of Item.data.checklist) {
+      if (
+        checklistItem.text.trim().toLowerCase() ===
+        itemName.trim().toLowerCase()
+      ) {
+        Logger.log(
+          itemNameInLogStatement +
+            " item did not exist, it has been made; it's title is" +
+            " " +
+            "'" +
+            checklistItem.text +
+            "'" +
+            ", its ID is: " +
+            checklistItem.id
+        );
+        return checklistItem;
+      }
+    }
+    return null;
+  }
+
+  function scoreHabit(id) {
+    const postParams = {
+      method: "post",
+      headers: {
+        "x-api-user": habId,
+        "x-api-key": habToken,
+      },
+    };
+    Logger.log("Scoring the habit...");
+    response = UrlFetchApp.fetch(
+      `https://habitica.com/api/v3/tasks/${id}/score/down`,
+      postParams
+    );
+    if (response.getResponseCode() === 200) {
+      Logger.log("Scoring successful");
+    } else {
+      Logger.log(
+        "There was an issue scoring the habit: " + response.getContentText()
+      );
+    }
+  }
+  function createHabit() {
+    const postParams = {
+      method: "post",
+      headers: {
+        "x-api-user": habId,
+        "x-api-key": habToken,
+      },
+      payload: {
+        text: habitToCheck,
+        type: "habit",
+        up: false,
+      },
+    };
+    Logger.log("Habit not yet created, creating one...");
+    response = UrlFetchApp.fetch(
+      "https://habitica.com/api/v3/tasks/user",
+      postParams
+    );
+    if (response.getResponseCode() === 201) {
+      Logger.log("Habit created successfully");
+      response = JSON.parse(response.getContentText());
+      return response.data["_id"];
+    }
+  }
+  function checkHabitExists(response) {
+    for (habit of response.data) {
+      if (
+        habit.text.trim().toLowerCase() === habitToCheck.trim().toLowerCase()
+      ) {
+        return habit;
+      }
+    }
+    return null;
+  }
+}

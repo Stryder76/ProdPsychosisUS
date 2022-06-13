@@ -18,4 +18,20 @@ There is some config guides contained inline in the code, you should be fine. Fe
 
 There is a list of ideas for how you can modify this in the [challenge](https://habitica.com/challenges/4867732f-4019-4880-823e-5f3a178acea8) description
 
-I plan on adding another guide for adding your own checklist items and a public to-do list here.
+I plan on adding another guide for adding your own checklist items here.
+
+Contnet update
+    have a requirement for less than 20 to-dos - done
+
+    Have a requirement for 4 to-dos done - queued and unknown in regards to how to execute on it
+
+    Have a requirement for 5 checklist items on to-dos clicked - queued and unknown in regards to how to execute on it
+    
+Restructuring update
+
+    Make to-do blacklisting for the to-do oreintated checklist items. This will allow stuff like monthly reviews which can only be done a few days ahead of time to work properly - queued and unknown in regards to how to execute on it
+
+    Uncheck all items when false - queued
+
+    make a non user script version of the challenge with more dallies - queued
+
