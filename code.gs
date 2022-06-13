@@ -244,7 +244,7 @@ function scheduleCron() {
             break;
           }
         }
-        poisonsDone = true; // this is debug code
+        //poisonsDone = true; // this is debug code
         Logger.log("Task checklist item is " + AllCursesCheckedChecklistName);
         if (poisonsDone == true) {
           Logger.log("All curses checked, scoring checklist item");
@@ -252,7 +252,6 @@ function scheduleCron() {
             `https://habitica.com/api/v3/tasks/${taskId}/checklist/${allCursesCheckedOutput.id}/score`,
             postParams
           );
-          //allCursesCheckedOutput.completed = true;
           allCursesCheckedOutput.completed = true;
         }
       }
@@ -285,7 +284,7 @@ function scheduleCron() {
           let day = 24 * hour;
           let diff = soonToDoDate - td;
           days = Math.floor(diff / day);
-          days = 17; //this is debug code
+          //days = 17; //this is debug code
           Logger.log(
             "due date difference from today is" + " " + "%s days",
             days
@@ -294,15 +293,13 @@ function scheduleCron() {
         }
         let soonToDosExist = parsedD.data.some(toDoin14Days);
         Logger.log("task checklist item is " + haveNoSoonToDosOutput.text);
-           if (soonToDosExist === false) {
+        if (soonToDosExist === false) {
           Logger.log("scoring checklist item");
           UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${
-haveNoSoonToDosOutput.id
-            }/score`,
+            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoSoonToDosOutput.id}/score`,
             postParams
           );
-    haveNoSoonToDosOutput.completed = true;
+          haveNoSoonToDosOutput.completed = true;
         }
       } else {
         Logger.log("something went wrong");
@@ -339,7 +336,7 @@ haveNoSoonToDosOutput.id
             ToDoDate.getMonth(),
             ToDoDate.getDate()
           );
-          ToDoDate = today; // this is debug code
+          //ToDoDate = today; // this is debug code
           Logger.log({ ToDoDate, today, today });
           if (ToDoDate < today) {
             overdue = true;
@@ -370,7 +367,7 @@ haveNoSoonToDosOutput.id
         for (task of parsedD.data) {
           toDoCount = toDoCount + 1;
         }
-        toDoCount = 10; // this is debug code
+        //toDoCount = 10; // this is debug code
         if (toDoCount < toDoLimit) {
           Logger.log("scoring checklist item");
           UrlFetchApp.fetch(
@@ -386,7 +383,7 @@ haveNoSoonToDosOutput.id
       // All below code until the next comment is for checking checklist items' completion status and ticking the negative habit if they aren't completed.
       if (allCursesCheckedOutput.completed == false) {
         Logger.log(
-          JSON.stringify({ haveNoSoonToDosOutput }) +
+          JSON.stringify({ allCursesCheckedOutput }) +
             " checklist item " +
             "failed deducting health..."
         );
@@ -520,8 +517,8 @@ haveNoSoonToDosOutput.id
         );
         return checklistItem;
       }
-      return null;
     }
+    return null;
   }
 
   function scoreHabit(id) {
