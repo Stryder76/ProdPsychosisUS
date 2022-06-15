@@ -31,9 +31,15 @@ Contnet update
     
 Restructuring update
 
-    Make to-do blacklisting for the to-do oreintated checklist items. This will allow stuff like monthly reviews which can only be done a few days ahead of time to work properly - queued and unknown in regards to how to execute on it
+    Make to-do blacklisting for the to-do oreintated checklist items. This will allow stuff like monthly reviews which can only be done a few days ahead of time to work properly - done
+
+    Split code across files as much as reasonably possible - queued
 
     Uncheck all items when false - queued
+
+    Auto check off daily task when all checklist items checked - queued
+
+    Only score tasks if they aren't already scored - queued
 
     make a non user script version of the challenge with more dallies - queued
 
