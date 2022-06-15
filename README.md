@@ -1,6 +1,6 @@
 # ProdPsychosisUS
 
-This branch is where I will push new features and fix bugs before pushing to main. I would strongly advise against using the code.gs file here, it could easily be problematic for users, I would only advise you use this branch if you want to look for bugs.
+This branch is where I push partial changes before releasing, use files at your own risk.
 
 This repository is my hosting location and publication of the user script I made from [@Lord_Vlad](https://habitica.com/profile/ce36e72e-50fd-4e98-908b-34b3c06e9664)'s orginal [challenge](https://habitica.com/challenges/074dec30-252f-42aa-9dc8-a6462b982a59) and [Userscript.](https://pastebin.com/Ajbc6u8D) I do not own the copyright and have his permission to have this repo.
 
