@@ -13,7 +13,8 @@ const jsonString =
 const jsonObject = JSON.parse(jsonString);
 const habId = jsonObject.habId;
 const habToken = jsonObject.habToken; // Never share your API token with anyone even on Github
-const todoDueDateItemsBlacklist = jsonObject.todoDueDateBlacklist;
+const soonTodoBlacklist = jsonObject.todoSoonDueDateBlacklist;
+const overDueTodoBlacklist = jsonObject.todoOverDueBlacklist;
 const lowTodoCountItemBlacklist = jsonObject.todoCountItemBlacklist;
 const habitToCheck =
   "![Crazy person with knife](https://i.imgur.com/Gl0O99r.png) Psychotic break"; // Change this ot the name that you want for the negative habit to click on checklist item failures
@@ -126,7 +127,7 @@ function scheduleCron() {
         }
         //poisonsDone = true; // this is debug code
         Logger.log("Task checklist item is " + AllCursesCheckedChecklistName);
-        if (poisonsDone == true) {
+        if (poisonsDone == true && allCursesCheckedOutput.completed === false) {
           Logger.log("All curses checked, scoring checklist item");
           UrlFetchApp.fetch(
             `https://habitica.com/api/v3/tasks/${taskId}/checklist/${allCursesCheckedOutput.id}/score`,
@@ -168,7 +169,7 @@ function scheduleCron() {
           let blacklistedTodosDateList;
           const findBlacklistedsoonTodosOutput = findBlacklistedTodos(
             "Soon to-dos",
-            todoDueDateItemsBlacklist,
+            soonTodoBlacklist,
             blacklistedTodosDateList
           );
           Logger.log(findBlacklistedsoonTodosOutput);
@@ -176,7 +177,10 @@ function scheduleCron() {
         }
         let soonToDosExist = parsedTD.data.some(toDoin14Days);
         Logger.log("task checklist item is " + haveNoSoonToDosOutput.text);
-        if (soonToDosExist === false) {
+        if (
+          soonToDosExist === false &&
+          haveNoSoonToDosOutput.completed === false
+        ) {
           Logger.log("scoring checklist item");
           UrlFetchApp.fetch(
             `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoSoonToDosOutput.id}/score`,
@@ -199,7 +203,6 @@ function scheduleCron() {
           today.getMonth(),
           today.getDate()
         );
-        //tomorrow.setDate(tomorrow.getDate()+1)
         let sec;
         let min;
         let hour;
@@ -217,11 +220,11 @@ function scheduleCron() {
           );
           //ToDoDate = today; // this is debug code
           Logger.log({ ToDoDate, today, today });
-          let blacklistedTodosDateList;
+          let blacklistedTodosOverdueList;
           const findBlacklistedOverdueTodosOutput = findBlacklistedTodos(
             "Overdue to-dos",
-            todoDueDateItemsBlacklist,
-            blacklistedTodosDateList
+            overDueTodoBlacklist,
+            blacklistedTodosOverdueList
           );
           Logger.log(findBlacklistedOverdueTodosOutput);
           if (ToDoDate < today && task.blacklisted === false) {
@@ -230,7 +233,7 @@ function scheduleCron() {
           }
         }
         Logger.log("task checklist item is " + haveNoOverDueTodosOutput.text);
-        if (overdue === false) {
+        if (overdue === false && haveNoOverDueTodosOutput.completed === false) {
           Logger.log("scoring checklist item");
           UrlFetchApp.fetch(
             `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoOverDueTodosOutput.id}/score`,
@@ -252,7 +255,7 @@ function scheduleCron() {
           toDoCount = toDoCount + 1;
         }
         //toDoCount = 10; // this is debug code
-        if (toDoCount < toDoLimit) {
+        if (toDoCount < toDoLimit && haveLessThanTwentyTodosOutput.completed === false) {
           Logger.log("scoring checklist item");
           UrlFetchApp.fetch(
             `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveLessThanTwentyTodosOutput.id}/score`,
