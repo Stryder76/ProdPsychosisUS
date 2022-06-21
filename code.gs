@@ -137,13 +137,6 @@ function scheduleCron() {
         }
       }
 
-      // Below code until next comment is the auto check for no soon to-dos
-      /*   const haveNoSoonToDosOutputForScoring = findItemAndCreateIfDidntExist(
-        task.checklist,
-        haveNoSoonToDosChecklistName,
-        "Have no soon to-dos"
-      );*/
-
       if (haveNoSoonToDosOutput) {
         let today = new Date();
         let days;
@@ -255,7 +248,10 @@ function scheduleCron() {
           toDoCount = toDoCount + 1;
         }
         //toDoCount = 10; // this is debug code
-        if (toDoCount < toDoLimit && haveLessThanTwentyTodosOutput.completed === false) {
+        if (
+          toDoCount < toDoLimit &&
+          haveLessThanTwentyTodosOutput.completed === false
+        ) {
           Logger.log("scoring checklist item");
           UrlFetchApp.fetch(
             `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveLessThanTwentyTodosOutput.id}/score`,
@@ -265,6 +261,19 @@ function scheduleCron() {
         }
       } else {
         Logger.log("something went wrong");
+      }
+
+      if (
+        allCursesCheckedOutput.completed === true &&
+        haveNoSoonToDosOutput.completed === true &&
+        haveNoOverDueTodosOutput.completed === true &&
+        haveLessThanTwentyTodosOutput.completed === true
+      ) {
+        Logger.log("Scoring daily");
+        UrlFetchApp.fetch(
+          `https://habitica.com/api/v3/tasks/${taskId}/score/up`,
+          postParams
+        );
       }
 
       // All below code until the next comment is for checking checklist items' completion status and ticking the negative habit if they aren't completed.
