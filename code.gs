@@ -12,18 +12,16 @@ const jsonString =
   HtmlService.createHtmlOutputFromFile("config.html").getContent();
 const jsonObject = JSON.parse(jsonString);
 const habId = jsonObject.habId;
-const habToken = jsonObject.habToken; // Never share your API token with anyone even on Github
+const habToken = jsonObject.habToken;
 const soonTodoBlacklist = jsonObject.todoSoonDueDateBlacklist;
 const overDueTodoBlacklist = jsonObject.todoOverDueBlacklist;
 const lowTodoCountItemBlacklist = jsonObject.todoCountItemBlacklist;
-const habitToCheck =
-  "![Crazy person with knife](https://i.imgur.com/Gl0O99r.png) Psychotic break"; // Change this ot the name that you want for the negative habit to click on checklist item failures
-const taskName =
-  "![insane person with cracked head on top](https://i.imgur.com/ktgyMSM.png) insanity remedy"; // Change this to the name of the daily that you want the checklist items to be on
-const AllCursesCheckedChecklistName = "All curses checked"; // Change this to your prefered name for the checklist item that will be auto created first if you don't have it and auto check if you've completed all base curses, I plan on adding modular code for the other challenges in the future
-const haveNoSoonToDosChecklistName = "No soon To-Dos"; // Change this to your prefered name for the checklist item that will be auto created second and auto check if you have no to-dos in the next 14 days
-const haveNoOverdueToDosChecklistName = "No overdue To-Dos"; // Change this to your prefered name for the checklist item that will be auto created third and auto check if you have no over due todos
-const haveLessThanTwentyTodosName = "Have less than 20 todos"; // Change this to your prefered name for the checklist item that wil be auto created fourth and auto check if you have less than 20 to-dos
+const habitToCheck = jsonObject.habitToCheck;
+const taskName = jsonObject.taskName;
+const AllCursesCheckedChecklistName = jsonObject.allCursesCheckedName
+const haveNoSoonToDosChecklistName = jsonObject.noSoonTodosName
+const haveNoOverdueToDosChecklistName = jsonObject.noOverdueTodosName
+const haveLessThanTwentyTodosName = jsonObject.haveALowTodoCountName
 
 function scheduleCron() {
   const getParams = {
@@ -90,7 +88,7 @@ function scheduleCron() {
       );
       if (allCursesCheckedOutput) {
         // Below code until next comment is the auto check for all curses done, I plan on adding more arrays that you can toggle the concatination of to allow for the addon challenge and other difficulties, sorrt for any inconvenience
-        const defaultEasyChallengePoisons = [
+        const defaultEasyChallengeCurses = [
           "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Time Magic",
           "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Ritual Preparation",
           "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Volunteering curse",
@@ -102,6 +100,7 @@ function scheduleCron() {
           "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Procrastinator's Curse",
           "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Villian's Curse",
         ];
+        const defaultHardChallengeCurses = []
         let dailyTasks = UrlFetchApp.fetch(
           "https://habitica.com/api/v3/tasks/user?type=dailys",
           getParams
@@ -110,7 +109,7 @@ function scheduleCron() {
         let poisonsDone = true;
         for (possibleCurseTask of parsedDT.data) {
           let isPoisonTitle = false;
-          for (poisonTitle of defaultEasyChallengePoisons) {
+          for (poisonTitle of defaultEasyChallengeCurses) {
             if (
               poisonTitle.trim().toLowerCase() ===
               possibleCurseTask.text.trim().toLowerCase()

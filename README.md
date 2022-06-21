@@ -30,7 +30,9 @@ Restructuring update
     
     Only score tasks if they aren't already scored - done
 
-    Auto check off daily task when all checklist items checked - currently working on
+    Auto check off daily task when all checklist items checked - done
+
+    Make config settings galore to allow 0 editing of the main file - currently working on
 
     make a non user script version of the challenge with more dallies - queued
 
