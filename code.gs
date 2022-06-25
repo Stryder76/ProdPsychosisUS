@@ -18,10 +18,10 @@ const overDueTodoBlacklist = jsonObject.todoOverDueBlacklist;
 const lowTodoCountItemBlacklist = jsonObject.todoCountItemBlacklist;
 const habitToCheck = jsonObject.habitToCheck;
 const taskName = jsonObject.taskName;
-const AllCursesCheckedChecklistName = jsonObject.allCursesCheckedName
-const haveNoSoonToDosChecklistName = jsonObject.noSoonTodosName
-const haveNoOverdueToDosChecklistName = jsonObject.noOverdueTodosName
-const haveLessThanTwentyTodosName = jsonObject.haveALowTodoCountName
+const AllCursesCheckedChecklistName = jsonObject.allCursesCheckedName;
+const haveNoSoonToDosChecklistName = jsonObject.noSoonTodosName;
+const haveNoOverdueToDosChecklistName = jsonObject.noOverdueTodosName;
+const haveLessThanTwentyTodosName = jsonObject.haveALowTodoCountName;
 
 function scheduleCron() {
   const getParams = {
@@ -87,7 +87,20 @@ function scheduleCron() {
         "Have a low to-do count"
       );
       if (allCursesCheckedOutput) {
-        // Below code until next comment is the auto check for all curses done, I plan on adding more arrays that you can toggle the concatination of to allow for the addon challenge and other difficulties, sorrt for any inconvenience
+        let pageNumber = 0
+        for (challenges of parsedUserChallenges.data) {
+          let userChallengeSearch = UrlFetchApp.fetch(
+            `https://habitica.com/api/v3/challenges/user?page=${pageNumber}&member=true&search='Productivity Curse:'`,
+            getParams
+          );
+          let parsedUserChallenges = JSON.parse(
+            userChallengeSearch.getContentText()
+          );
+          logger.log(parsedUserChallenges)
+          pageNumber +=1
+        }
+        // Below code until next comment is the auto check for all curses done, I plan on adding more arrays that you can toggle the concatination of to allow for the addon challenge and other difficulties, sorry for any inconvenience
+
         const defaultEasyChallengeCurses = [
           "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Time Magic",
           "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Ritual Preparation",
@@ -100,7 +113,6 @@ function scheduleCron() {
           "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Procrastinator's Curse",
           "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Villian's Curse",
         ];
-        const defaultHardChallengeCurses = []
         let dailyTasks = UrlFetchApp.fetch(
           "https://habitica.com/api/v3/tasks/user?type=dailys",
           getParams
