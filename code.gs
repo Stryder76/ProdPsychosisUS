@@ -8,11 +8,11 @@
 
   This script was originally comissioned by the copyright owner. I (@Stryder2076) started using it myself and modified and distributed it with his permission.*/
 
-const jsonString =
+  const jsonString =
   HtmlService.createHtmlOutputFromFile("config.html").getContent();
 const jsonObject = JSON.parse(jsonString);
 const habId = jsonObject.habId;
-const habToken = jsonObject.habToken;
+const habToken = jsonObject.habToken; // Never share your API token with anyone even on Github
 const soonTodoBlacklist = jsonObject.todoSoonDueDateBlacklist;
 const overDueTodoBlacklist = jsonObject.todoOverDueBlacklist;
 const lowTodoCountItemBlacklist = jsonObject.todoCountItemBlacklist;
@@ -87,21 +87,8 @@ function scheduleCron() {
         "Have a low to-do count"
       );
       if (allCursesCheckedOutput) {
-        let pageNumber = 0
-        for (challenges of parsedUserChallenges.data) {
-          let userChallengeSearch = UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/challenges/user?page=${pageNumber}&member=true&search='Productivity Curse:'`,
-            getParams
-          );
-          let parsedUserChallenges = JSON.parse(
-            userChallengeSearch.getContentText()
-          );
-          logger.log(parsedUserChallenges)
-          pageNumber +=1
-        }
-        // Below code until next comment is the auto check for all curses done, I plan on adding more arrays that you can toggle the concatination of to allow for the addon challenge and other difficulties, sorry for any inconvenience
-
-        const defaultEasyChallengeCurses = [
+        // Below code until next comment is the auto check for all curses done, I plan on adding more arrays that you can toggle the concatination of to allow for the addon challenge and other difficulties, sorrt for any inconvenience
+        const defaultEasyChallengePoisons = [
           "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Time Magic",
           "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Ritual Preparation",
           "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Volunteering curse",
@@ -121,7 +108,7 @@ function scheduleCron() {
         let poisonsDone = true;
         for (possibleCurseTask of parsedDT.data) {
           let isPoisonTitle = false;
-          for (poisonTitle of defaultEasyChallengeCurses) {
+          for (poisonTitle of defaultEasyChallengePoisons) {
             if (
               poisonTitle.trim().toLowerCase() ===
               possibleCurseTask.text.trim().toLowerCase()
@@ -214,36 +201,42 @@ function scheduleCron() {
         min = 60 * sec;
         hour = 60 * min;
         day = 24 * hour;
+        let blacklistedTodosOverdueList;
+        const findBlacklistedOverdueTodosOutput = findBlacklistedTodos(
+          "Overdue to-dos",
+          overDueTodoBlacklist,
+          blacklistedTodosOverdueList
+        );
+        Logger.log(findBlacklistedOverdueTodosOutput);
+        for (possibleOverDueToDo of parsedTD.data) {
+          if (possibleOverDueToDo.date) {
+            let ToDoDate = new Date(possibleOverDueToDo.date);
 
-        for (task of parsedTD.data) {
-          let ToDoDate = new Date(task.date);
-          ToDoDate = new Date(
-            ToDoDate.getFullYear(),
-            ToDoDate.getMonth(),
-            ToDoDate.getDate()
-          );
-          //ToDoDate = today; // this is debug code
-          Logger.log({ ToDoDate, today, today });
-          let blacklistedTodosOverdueList;
-          const findBlacklistedOverdueTodosOutput = findBlacklistedTodos(
-            "Overdue to-dos",
-            overDueTodoBlacklist,
-            blacklistedTodosOverdueList
-          );
-          Logger.log(findBlacklistedOverdueTodosOutput);
-          if (ToDoDate < today && task.blacklisted === false) {
-            overdue = true;
-            break;
+            ToDoDate = new Date(
+              ToDoDate.getFullYear(),
+              ToDoDate.getMonth(),
+              ToDoDate.getDate()
+            );
+
+            //ToDoDate = today; // this is debug code
+            Logger.log({ ToDoDate, today, today });
+
+
+            if (ToDoDate < today && possibleOverDueToDo.blacklisted === false) {
+              overdue = true;
+              break;
+            }
+
+            Logger.log("Have no overdue to-dos checklist item is " + haveNoOverDueTodosOutput.text);
+            if (overdue === false && haveNoOverDueTodosOutput.completed === false) {
+              Logger.log("scoring checklist item");
+              UrlFetchApp.fetch(
+                `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoOverDueTodosOutput.id}/score`,
+                postParams
+              );
+              haveNoOverDueTodosOutput.completed = true;
+            }
           }
-        }
-        Logger.log("task checklist item is " + haveNoOverDueTodosOutput.text);
-        if (overdue === false && haveNoOverDueTodosOutput.completed === false) {
-          Logger.log("scoring checklist item");
-          UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoOverDueTodosOutput.id}/score`,
-            postParams
-          );
-          haveNoOverDueTodosOutput.completed = true;
         }
       } else {
         Logger.log("something went wrong");
@@ -291,8 +284,8 @@ function scheduleCron() {
       if (allCursesCheckedOutput.completed == false) {
         Logger.log(
           JSON.stringify({ allCursesCheckedOutput }) +
-            " checklist item " +
-            "failed deducting health..."
+          " checklist item " +
+          "failed deducting health..."
         );
         response = UrlFetchApp.fetch(
           "https://habitica.com/api/v3/tasks/user?type=habits",
@@ -311,8 +304,8 @@ function scheduleCron() {
       if (haveNoSoonToDosOutput.completed == false) {
         Logger.log(
           JSON.stringify({ haveNoSoonToDosOutput }) +
-            " Checklist item " +
-            " failed deducting health..."
+          " Checklist item " +
+          " failed deducting health..."
         );
         response = UrlFetchApp.fetch(
           "https://habitica.com/api/v3/tasks/user?type=habits",
@@ -333,7 +326,7 @@ function scheduleCron() {
       if (haveNoOverDueTodosOutput.completed == false) {
         Logger.log(
           JSON.stringify({ haveNoOverDueTodosOutput }) +
-            " checklist failed deducting health..."
+          " checklist failed deducting health..."
         );
         response = UrlFetchApp.fetch(
           "https://habitica.com/api/v3/tasks/user?type=habits",
@@ -356,8 +349,8 @@ function scheduleCron() {
       if (haveLessThanTwentyTodosOutput.completed == false) {
         Logger.log(
           JSON.stringify({ haveLessThanTwentyTodosOutput }) +
-            " checklist item " +
-            "failed deducting health..."
+          " checklist item " +
+          "failed deducting health..."
         );
         response = UrlFetchApp.fetch(
           "https://habitica.com/api/v3/tasks/user?type=habits",
@@ -385,13 +378,13 @@ function scheduleCron() {
       if (check.text.trim().toLowerCase() === itemName.trim().toLowerCase()) {
         Logger.log(
           itemNameInLogStatement +
-            " item name is" +
-            " " +
-            "'" +
-            check.text +
-            "'" +
-            ", its ID is: " +
-            check.id
+          " item name is" +
+          " " +
+          "'" +
+          check.text +
+          "'" +
+          ", its ID is: " +
+          check.id
         );
         return check;
       }
@@ -414,13 +407,13 @@ function scheduleCron() {
       ) {
         Logger.log(
           itemNameInLogStatement +
-            " item did not exist, it has been made; it's title is" +
-            " " +
-            "'" +
-            checklistItem.text +
-            "'" +
-            ", its ID is: " +
-            checklistItem.id
+          " item did not exist, it has been made; it's title is" +
+          " " +
+          "'" +
+          checklistItem.text +
+          "'" +
+          ", its ID is: " +
+          checklistItem.id
         );
         return checklistItem;
       }
