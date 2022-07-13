@@ -195,9 +195,10 @@ function scheduleCron() {
           );
           allCursesCheckedOutput.completed = true;
         }
-      }
-      else {
-        Logger.log("You either aren't in any curse challenges, or have the item turned off. If neither of these are true please report this error")
+      } else {
+        Logger.log(
+          "You either aren't in any curse challenges, or have the item turned off. If neither of these are true please report this error"
+        );
       }
 
       if (haveNoSoonToDosOutput) {
@@ -293,7 +294,7 @@ function scheduleCron() {
 
             Logger.log(
               "Have no overdue to-dos checklist item is " +
-              haveNoOverDueTodosOutput.text
+                haveNoOverDueTodosOutput.text
             );
             if (
               overdue === false &&
@@ -307,15 +308,6 @@ function scheduleCron() {
               haveNoOverDueTodosOutput.completed = true;
             }
           }
-        }
-        Logger.log("task checklist item is " + haveNoOverDueTodosOutput.text);
-        if (overdue === false && haveNoOverDueTodosOutput.completed === false) {
-          Logger.log("scoring checklist item");
-          UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoOverDueTodosOutput.id}/score`,
-            postParams
-          );
-          haveNoOverDueTodosOutput.completed = true;
         }
       } else {
         Logger.log("something went wrong");
@@ -358,8 +350,7 @@ function scheduleCron() {
             postParams
           );
         }
-      }
-      else {
+      } else {
         if (
           haveNoSoonToDosOutput.completed === true &&
           haveNoOverDueTodosOutput.completed === true &&
@@ -375,27 +366,27 @@ function scheduleCron() {
 
       // All below code until the next comment is for checking checklist items' completion status and ticking the negative habit if they aren't completed.
       if (curseList > 0 && allCursesCheckedItemIsEnabled === true) {
-      if (allCursesCheckedOutput.completed == false) {
-        Logger.log(
-          JSON.stringify({ allCursesCheckedOutput }) +
-            " checklist item " +
-            "failed deducting health..."
-        );
-        response = UrlFetchApp.fetch(
-          "https://habitica.com/api/v3/tasks/user?type=habits",
-          getParams
-        );
-        response = JSON.parse(response.getContentText());
-        habit = checkHabitExists(response);
-        if (habit) {
-          // You can change the amount of habit scoring in this if statement and the below else statement to configure the punishment for failure of each checklist item, be careful with using too many as it can cause rate limiting
-          scoreHabit(habit.id);
-        } else {
-          id = createHabit();
-          scoreHabit(habit.id);
+        if (allCursesCheckedOutput.completed == false) {
+          Logger.log(
+            JSON.stringify({ allCursesCheckedOutput }) +
+              " checklist item " +
+              "failed deducting health..."
+          );
+          response = UrlFetchApp.fetch(
+            "https://habitica.com/api/v3/tasks/user?type=habits",
+            getParams
+          );
+          response = JSON.parse(response.getContentText());
+          habit = checkHabitExists(response);
+          if (habit) {
+            // You can change the amount of habit scoring in this if statement and the below else statement to configure the punishment for failure of each checklist item, be careful with using too many as it can cause rate limiting
+            scoreHabit(habit.id);
+          } else {
+            id = createHabit();
+            scoreHabit(habit.id);
+          }
         }
       }
-    }
       if (haveNoSoonToDosOutput.completed == false) {
         Logger.log(
           JSON.stringify({ haveNoSoonToDosOutput }) +
@@ -539,9 +530,11 @@ function scheduleCron() {
     return blacklistedConfig;
   }
 
-  function findTaskCurses(dailyTasksAfterParsing, allCursesCheckedData, possibleCursesList) {
-
-
+  function findTaskCurses(
+    dailyTasksAfterParsing,
+    allCursesCheckedData,
+    possibleCursesList
+  ) {
     for (possibleCurseTask of dailyTasksAfterParsing) {
       for (curseTitle of possibleCursesList) {
         let isPoisonTitle = false;
