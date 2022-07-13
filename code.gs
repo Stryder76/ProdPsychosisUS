@@ -11,17 +11,26 @@
 const jsonString =
   HtmlService.createHtmlOutputFromFile("config.html").getContent();
 const jsonObject = JSON.parse(jsonString);
-const habId = jsonObject.habId;
-const habToken = jsonObject.habToken;
-const soonTodoBlacklist = jsonObject.todoSoonDueDateBlacklist;
-const overDueTodoBlacklist = jsonObject.todoOverDueBlacklist;
-const lowTodoCountItemBlacklist = jsonObject.todoCountItemBlacklist;
-const habitToCheck = jsonObject.habitToCheck;
-const taskName = jsonObject.taskName;
-const AllCursesCheckedChecklistName = jsonObject.allCursesCheckedName;
-const haveNoSoonToDosChecklistName = jsonObject.noSoonTodosName;
-const haveNoOverdueToDosChecklistName = jsonObject.noOverdueTodosName;
-const haveLessThanTwentyTodosName = jsonObject.haveALowTodoCountName;
+const habId = jsonObject.coreSettings.habId;
+const habToken = jsonObject.coreSettings.habToken; // Never share your API token with anyone even on Github
+const soonTodoBlacklist =
+  jsonObject.optionalSettings.blacklists.todoSoonDueDateBlacklist;
+const overDueTodoBlacklist =
+  jsonObject.optionalSettings.blacklists.todoOverDueBlacklist;
+const lowTodoCountItemBlacklist =
+  jsonObject.optionalSettings.blacklists.todoCountItemBlacklist;
+const habitToCheck = jsonObject.coreSettings.habitToCheck;
+const taskName = jsonObject.coreSettings.taskName;
+const AllCursesCheckedChecklistName =
+  jsonObject.checklistItemNames.allCursesCheckedName;
+const haveNoSoonToDosChecklistName =
+  jsonObject.checklistItemNames.noSoonTodosName;
+const haveNoOverdueToDosChecklistName =
+  jsonObject.checklistItemNames.noOverdueTodosName;
+const haveLessThanTwentyTodosName =
+  jsonObject.checklistItemNames.haveALowTodoCountName;
+const allCursesCheckedItemIsEnabled =
+  jsonObject.optionalSettings.itemToggles.allCursesCheckedItemStatus;
 
 function scheduleCron() {
   const getParams = {
@@ -39,17 +48,23 @@ function scheduleCron() {
     },
   };
 
-  // below code until next comment goes through every todo and makes it default to not being blacklisted
+  // below code until next comment goes through every todo and makes it default to not being blacklisted and counts the completed checklist item count
 
   let allTodos = UrlFetchApp.fetch(
     "https://habitica.com/api/v3/tasks/user?type=todos",
     getParams
   );
   let parsedTD = JSON.parse(allTodos.getContentText());
-
-  for (todos of parsedTD.data) {
-    todos.blacklisted = false;
+  let completedChecklistCount = 0;
+  for (todo of parsedTD.data) {
+    for (completedChecklist of todo.checklist) {
+      if (completedChecklist.complete === true) {
+        completedChecklistCount += 1;
+      }
+    }
+    todo.blacklisted = false;
   }
+
   // Below code until next comment is fetching the list of daily tasks and defining the majority of variables that will be used later on.
 
   let response = UrlFetchApp.fetch(
@@ -63,13 +78,79 @@ function scheduleCron() {
     if (task.text.trim().toLowerCase() === taskName.trim().toLowerCase()) {
       Logger.log("Found task " + task.id);
       var taskId = task.id;
+      const defaultEasyChallengeCurses = [
+        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Time Magic",
+        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Ritual Preparation",
+        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Volunteering curse",
+        "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Old Magician's Curse",
+        "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Questing for Ingredient",
+        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Mana Vampirism Curse",
+        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Organizational Curse",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Curse of the To-Do Bosses",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Procrastinator's Curse",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Villian's Curse",
+      ];
 
-      // This for loop looks through the checklist of the correct task and checks to see if the checklist items exist, if they do it communicates that to another code section through a function output and moves on, otherwise nothing happens
-      const allCursesCheckedOutput = findItemAndCreateIfDidntExist(
-        task.checklist,
-        AllCursesCheckedChecklistName,
-        "All curses checked"
+      const defaultHardChallengeCurses = [
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Time Magic",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Ritual Preparation",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Volunteering curse",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Old Magician's Curse",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Questing for Ingredient",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Mana Vampirism Curse",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Organizational Curse",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Curse of the To-Do Bosses",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Procrastinator's Curse",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Villian's Curse",
+      ];
+
+      const defaultClassBasedChallengeCurses = [
+        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Time Magic",
+        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Ritual Preparation",
+        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Volunteering curse",
+        "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Old Magician's Curse",
+        "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Questing for Ingredient",
+        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Mana Vampirism Curse",
+        "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Organizational Curse",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Curse of the To-Do Bosses",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Procrastinator's Curse",
+        "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Villian's Curse",
+      ];
+
+      const mageCurseName =
+        "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Wild Magic Curse";
+      const rougeCurseName =
+        "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Kleptomania";
+      const healerCurseName =
+        "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Healing Duty";
+      const warriorCurseName =
+        "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Cursed Armor";
+      const allPossibleCurses = defaultEasyChallengeCurses.concat(
+        defaultHardChallengeCurses,
+        defaultClassBasedChallengeCurses,
+        mageCurseName,
+        rougeCurseName,
+        healerCurseName,
+        warriorCurseName
       );
+      let curseList = [];
+      for (taskListItem of response.data) {
+        for (curse of allPossibleCurses) {
+          if (curse === taskListItem.text) {
+            curseList.push(curse);
+          }
+        }
+      }
+
+      //curseList = []; // this is debug code
+      // This for loop looks through the checklist of the correct task and checks to see if the checklist items exist, if they do it communicates that to another code section through a function output and moves on, otherwise nothing happens
+      if (curseList.length > 0 && allCursesCheckedItemIsEnabled === true) {
+        var allCursesCheckedOutput = findItemAndCreateIfDidntExist(
+          task.checklist,
+          AllCursesCheckedChecklistName,
+          "All curses checked"
+        );
+      }
       const haveNoSoonToDosOutput = findItemAndCreateIfDidntExist(
         task.checklist,
         haveNoSoonToDosChecklistName,
@@ -86,59 +167,27 @@ function scheduleCron() {
         haveLessThanTwentyTodosName,
         "Have a low to-do count"
       );
-      if (allCursesCheckedOutput) {
-        let pageNumber = 0
-        for (challenges of parsedUserChallenges.data) {
-          let userChallengeSearch = UrlFetchApp.fetch(
-            `https://habitica.com/api/v3/challenges/user?page=${pageNumber}&member=true&search='Productivity Curse:'`,
-            getParams
-          );
-          let parsedUserChallenges = JSON.parse(
-            userChallengeSearch.getContentText()
-          );
-          logger.log(parsedUserChallenges)
-          pageNumber +=1
-        }
-        // Below code until next comment is the auto check for all curses done, I plan on adding more arrays that you can toggle the concatination of to allow for the addon challenge and other difficulties, sorry for any inconvenience
 
-        const defaultEasyChallengeCurses = [
-          "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Time Magic",
-          "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Ritual Preparation",
-          "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Volunteering curse",
-          "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Old Magician's Curse",
-          "R![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullRed.png) Questing for Ingredient",
-          "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Mana Vampirism Curse",
-          "B![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlue.png) Organizational Curse",
-          "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Curse of the To-Do Bosses",
-          "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Procrastinator's Curse",
-          "D![Poison](http://avians.net/arrow/Habitica/YAP_Images/SkullBlack.png) Villian's Curse",
-        ];
+      if (allCursesCheckedOutput) {
+        // Below code until next comment is the auto check for all curses done, I plan on adding more arrays that you can toggle the concatination of to allow for the addon challenge and other difficulties, sorrt for any inconvenience
+
         let dailyTasks = UrlFetchApp.fetch(
           "https://habitica.com/api/v3/tasks/user?type=dailys",
           getParams
         );
         let parsedDT = JSON.parse(dailyTasks.getContentText());
-        let poisonsDone = true;
-        for (possibleCurseTask of parsedDT.data) {
-          let isPoisonTitle = false;
-          for (poisonTitle of defaultEasyChallengeCurses) {
-            if (
-              poisonTitle.trim().toLowerCase() ===
-              possibleCurseTask.text.trim().toLowerCase()
-            ) {
-              isPoisonTitle = true;
-              break;
-            }
-          }
+        const findTaskCursesOutput = findTaskCurses(
+          parsedDT.data,
+          allCursesCheckedOutput,
+          allPossibleCurses
+        );
+        Logger.log(findTaskCursesOutput);
 
-          if (isPoisonTitle === true && possibleCurseTask.completed === false) {
-            poisonsDone = false;
-            break;
-          }
-        }
-        //poisonsDone = true; // this is debug code
         Logger.log("Task checklist item is " + AllCursesCheckedChecklistName);
-        if (poisonsDone == true && allCursesCheckedOutput.completed === false) {
+        if (
+          findTaskCursesOutput === true &&
+          allCursesCheckedOutput.completed === false
+        ) {
           Logger.log("All curses checked, scoring checklist item");
           UrlFetchApp.fetch(
             `https://habitica.com/api/v3/tasks/${taskId}/checklist/${allCursesCheckedOutput.id}/score`,
@@ -146,6 +195,9 @@ function scheduleCron() {
           );
           allCursesCheckedOutput.completed = true;
         }
+      }
+      else {
+        Logger.log("You either aren't in any curse challenges, or have the item turned off. If neither of these are true please report this error")
       }
 
       if (haveNoSoonToDosOutput) {
@@ -214,26 +266,46 @@ function scheduleCron() {
         min = 60 * sec;
         hour = 60 * min;
         day = 24 * hour;
+        let blacklistedTodosOverdueList;
+        const findBlacklistedOverdueTodosOutput = findBlacklistedTodos(
+          "Overdue to-dos",
+          overDueTodoBlacklist,
+          blacklistedTodosOverdueList
+        );
+        Logger.log(findBlacklistedOverdueTodosOutput);
+        for (possibleOverDueToDo of parsedTD.data) {
+          if (possibleOverDueToDo.date) {
+            let ToDoDate = new Date(possibleOverDueToDo.date);
 
-        for (task of parsedTD.data) {
-          let ToDoDate = new Date(task.date);
-          ToDoDate = new Date(
-            ToDoDate.getFullYear(),
-            ToDoDate.getMonth(),
-            ToDoDate.getDate()
-          );
-          //ToDoDate = today; // this is debug code
-          Logger.log({ ToDoDate, today, today });
-          let blacklistedTodosOverdueList;
-          const findBlacklistedOverdueTodosOutput = findBlacklistedTodos(
-            "Overdue to-dos",
-            overDueTodoBlacklist,
-            blacklistedTodosOverdueList
-          );
-          Logger.log(findBlacklistedOverdueTodosOutput);
-          if (ToDoDate < today && task.blacklisted === false) {
-            overdue = true;
-            break;
+            ToDoDate = new Date(
+              ToDoDate.getFullYear(),
+              ToDoDate.getMonth(),
+              ToDoDate.getDate()
+            );
+
+            //ToDoDate = today; // this is debug code
+            Logger.log({ ToDoDate, today, today });
+
+            if (ToDoDate < today && possibleOverDueToDo.blacklisted === false) {
+              overdue = true;
+              break;
+            }
+
+            Logger.log(
+              "Have no overdue to-dos checklist item is " +
+              haveNoOverDueTodosOutput.text
+            );
+            if (
+              overdue === false &&
+              haveNoOverDueTodosOutput.completed === false
+            ) {
+              Logger.log("scoring checklist item");
+              UrlFetchApp.fetch(
+                `https://habitica.com/api/v3/tasks/${taskId}/checklist/${haveNoOverDueTodosOutput.id}/score`,
+                postParams
+              );
+              haveNoOverDueTodosOutput.completed = true;
+            }
           }
         }
         Logger.log("task checklist item is " + haveNoOverDueTodosOutput.text);
@@ -273,21 +345,36 @@ function scheduleCron() {
       } else {
         Logger.log("something went wrong");
       }
-
-      if (
-        allCursesCheckedOutput.completed === true &&
-        haveNoSoonToDosOutput.completed === true &&
-        haveNoOverDueTodosOutput.completed === true &&
-        haveLessThanTwentyTodosOutput.completed === true
-      ) {
-        Logger.log("Scoring daily");
-        UrlFetchApp.fetch(
-          `https://habitica.com/api/v3/tasks/${taskId}/score/up`,
-          postParams
-        );
+      if (allCursesCheckedItemIsEnabled === true && curseList.length > 0) {
+        if (
+          allCursesCheckedOutput.completed === true &&
+          haveNoSoonToDosOutput.completed === true &&
+          haveNoOverDueTodosOutput.completed === true &&
+          haveLessThanTwentyTodosOutput.completed === true
+        ) {
+          Logger.log("Scoring daily");
+          UrlFetchApp.fetch(
+            `https://habitica.com/api/v3/tasks/${taskId}/score/up`,
+            postParams
+          );
+        }
+      }
+      else {
+        if (
+          haveNoSoonToDosOutput.completed === true &&
+          haveNoOverDueTodosOutput.completed === true &&
+          haveLessThanTwentyTodosOutput.completed === true
+        ) {
+          Logger.log("Scoring daily");
+          UrlFetchApp.fetch(
+            `https://habitica.com/api/v3/tasks/${taskId}/score/up`,
+            postParams
+          );
+        }
       }
 
       // All below code until the next comment is for checking checklist items' completion status and ticking the negative habit if they aren't completed.
+      if (curseList > 0 && allCursesCheckedItemIsEnabled === true) {
       if (allCursesCheckedOutput.completed == false) {
         Logger.log(
           JSON.stringify({ allCursesCheckedOutput }) +
@@ -308,6 +395,7 @@ function scheduleCron() {
           scoreHabit(habit.id);
         }
       }
+    }
       if (haveNoSoonToDosOutput.completed == false) {
         Logger.log(
           JSON.stringify({ haveNoSoonToDosOutput }) +
@@ -449,6 +537,27 @@ function scheduleCron() {
       "These are the blacklisted " + taskTypeInLogStatement + " found"
     );
     return blacklistedConfig;
+  }
+
+  function findTaskCurses(dailyTasksAfterParsing, allCursesCheckedData, possibleCursesList) {
+
+
+    for (possibleCurseTask of dailyTasksAfterParsing) {
+      for (curseTitle of possibleCursesList) {
+        let isPoisonTitle = false;
+        if (
+          curseTitle.trim().toLowerCase() ===
+          possibleCurseTask.text.trim().toLowerCase()
+        ) {
+          isPoisonTitle = true;
+        }
+        //possibleCurseTask.completed = true; // this is debug code
+        if (isPoisonTitle === true && possibleCurseTask.completed === false) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   function scoreHabit(id) {

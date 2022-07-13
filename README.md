@@ -24,7 +24,7 @@ There is a list of ideas for how you can modify this in the [challenge](https://
 
 **To-do list**
 
-Restructuring update
+Restructuring update - done, checkout the versions.
 
     Make to-do blacklisting for the to-do oreintated checklist items. This will allow stuff like monthly reviews which can only be done a few days ahead of time to work properly - done
     
@@ -32,13 +32,22 @@ Restructuring update
 
     Auto check off daily task when all checklist items checked - done
 
-    Make config settings galore to allow 0 editing of the main file - currently working on
-
-    make a non user script version of the challenge with more dallies - queued
+    make a non user script version of the challenge with more dallies - done
 
 Content update
+
     have a requirement for less than 20 to-dos - done
 
     Have a requirement for 4 to-dos done - queued and unknown in regards to how to execute on it
 
-    Have a requirement for 5 checklist items on to-dos clicked - queued and unknown in regards to how to execute on it
+    Have a requirement for 5 checklist items on to-dos clicked - queued
+
+
+    Config update - currently working on
+
+        habit tick config - currently working on
+        soon to-do criteria - queued
+        soon to-do amount - queued
+        overdue to-do amount - queued
+        Check if people have any curse tasks and if not remove/cancel the checklist item - done
+        Boolean value for each checklist item to be used at all - queued
